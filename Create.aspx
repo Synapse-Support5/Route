@@ -133,22 +133,6 @@
             </div>
         </nav>
 
-        <%--<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-white bg-white">
-            <div class="container">
-                <a class="navbar-brand" runat="server" href="~/Home">SYNAPSE</a>
-                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/Home">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/Create">Create</a></li>
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/Modify">Modify</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>--%>
         <hr />
 
         <div class="container body-content">

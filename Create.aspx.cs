@@ -533,6 +533,9 @@ namespace Route
                     allchk.Checked = false;
                 }
             }
+
+            RouteGridView.DataSource = null;
+            RouteGridView.DataBind();
         }
         #endregion
 
