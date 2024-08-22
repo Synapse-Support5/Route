@@ -382,6 +382,7 @@ namespace Route
                 }
 
                 string checkedDaysString = string.Join(", ", checkedDays);
+                string pattern = @"^[a-zA-Z0-9 _]+$";
 
                 if (distId == "")
                 {
@@ -391,6 +392,11 @@ namespace Route
                 else if (rtCode == "")
                 {
                     showToast("Please select Route Code", "toast-danger");
+                    return;
+                }
+                else if (!System.Text.RegularExpressions.Regex.IsMatch(rtCode, pattern))
+                {
+                    showToast("Route Code can only contain alphanumeric characters, spaces, and underscores", "toast-danger");
                     return;
                 }
                 else if (rtName == "")

@@ -167,7 +167,7 @@
                         <asp:DropDownList ID="DropDownList1" runat="server" AutoPostBack="true" class="form-control">
                             <asp:ListItem Text="Status" Value=""></asp:ListItem>
                             <asp:ListItem Text="Active" Value="1"></asp:ListItem>
-                            <asp:ListItem Text="InActive" Value="0"></asp:ListItem>
+                            <%--<asp:ListItem Text="InActive" Value="0"></asp:ListItem>--%>
                         </asp:DropDownList>
                     </div>
                 </div>

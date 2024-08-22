@@ -259,7 +259,7 @@
                                     <div style="width: 10px; height: 10px; background-color: green; margin-right: 5px;"></div>
                                     <span style="color: green">Mapped</span>
                                     <div style="width: 10px; height: 10px; background-color: red; margin-right: 5px; margin-left: 10px;"></div>
-                                    <span style="color: red">UnMapped</span>
+                                    <span style="color: red">Not Mapped</span>
                                 </div>
                                 <button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

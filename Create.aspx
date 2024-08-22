@@ -157,7 +157,8 @@
                         </asp:DropDownList>
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:TextBox ID="RtCode" runat="server" CssClass="form-control" placeholder="Route Code"></asp:TextBox>
+                        <asp:TextBox ID="RtCode" runat="server" CssClass="form-control" placeholder="Route Code"
+                            onkeypress="return isValidInput(event);" oninput="removeInvalidChars(this);"></asp:TextBox>
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
                         <asp:TextBox ID="RtName" runat="server" CssClass="form-control" placeholder="Route Name"></asp:TextBox>
@@ -274,20 +275,6 @@
         </div>
     </form>
 
-    <%-- Script for seacrhbox in DropDown --%>
-    <%--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Initialize Select2
-            $('#<%= DistDrp.ClientID %>').select2({
-                placeholder: "Select a dist.",
-                allowClear: true,
-                width: 'resolve' // This will allow Select2 to inherit Bootstrap's form-control styling
-            }).next().addClass('form-control');
-        });
-    </script>--%>
-
     <%-- Script for selectall checkboxes in Modal --%>
     <script type="text/javascript">
         function selectAllCheckboxes(source) {
@@ -320,5 +307,27 @@
             });
         });
     </script>
+
+    <%--Script to allow only alphanumeric characters, space, and underscore --%>
+    <script type="text/javascript">
+        // Function to allow only alphanumeric characters, space, and underscore
+        function isValidInput(event) {
+            var charCode = event.which || event.keyCode;
+            var charStr = String.fromCharCode(charCode);
+
+            // Allow backspace, delete, tab, escape, enter, space, underscore, and alphanumerics
+            if (charCode === 8 || charCode === 9 || charCode === 13 || charCode === 27 ||
+                charCode === 32 || charStr === "_" || /^[a-zA-Z0-9]$/.test(charStr)) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Function to remove any invalid characters if pasted into the textbox
+        function removeInvalidChars(input) {
+            input.value = input.value.replace(/[^a-zA-Z0-9 _]/g, '');
+        }
+</script>
 </body>
 </html>

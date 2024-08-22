@@ -270,7 +270,7 @@ namespace Route
             DropDownList1.Items.Clear();
             DropDownList1.Items.Add(new ListItem("Status", ""));
             DropDownList1.Items.Add(new ListItem("Active", "1"));
-            DropDownList1.Items.Add(new ListItem("Inactive", "0"));
+            //DropDownList1.Items.Add(new ListItem("Inactive", "0"));
 
             DropDownList1.DataBind();
 
