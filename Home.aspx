@@ -105,6 +105,9 @@
                         <li class="nav-item">
                             <a class="nav-link" runat="server" href="~/Map">Map</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/Transfer">Transfer</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -126,8 +129,8 @@
             </table>
             <br />
 
- 
-           <%-- Notification Label --%>
+
+            <%-- Notification Label --%>
             <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;"></div>
             <asp:HiddenField ID="hdnBusinessType" runat="server" />
             <asp:HiddenField ID="hdnRole" runat="server" />

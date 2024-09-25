@@ -128,6 +128,9 @@
                         <li class="nav-item">
                             <a id="ModifyLink" class="nav-link" runat="server" href="~/Map">Map</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/Transfer">Transfer</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -328,6 +331,6 @@
         function removeInvalidChars(input) {
             input.value = input.value.replace(/[^a-zA-Z0-9 _]/g, '');
         }
-</script>
+    </script>
 </body>
 </html>

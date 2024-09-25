@@ -17,7 +17,7 @@ namespace Route
 {
     public partial class Create : System.Web.UI.Page
     {
-        SqlConnection con = new SqlConnection(ConfigurationManager.AppSettings["SqlConnSFA"].ToString());
+        SqlConnection con = new SqlConnection(ConfigurationManager.AppSettings["SqlConn"].ToString());
         DataTable dt = new DataTable();
         DataTable resdt = new DataTable();
         DataSet ds1 = new DataSet();

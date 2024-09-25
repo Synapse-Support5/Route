@@ -14,7 +14,7 @@ namespace Route
 {
     public partial class Modify : System.Web.UI.Page
     {
-        SqlConnection con = new SqlConnection(ConfigurationManager.AppSettings["SqlConnSFA"].ToString());
+        SqlConnection con = new SqlConnection(ConfigurationManager.AppSettings["SqlConn"].ToString());
         DataTable dt = new DataTable();
         DataTable resdt = new DataTable();
         DataSet ds1 = new DataSet();
@@ -41,8 +41,8 @@ namespace Route
         {
             try
             {
-                Session["name"] = "G116036";
-                //Session["name"] = Request.ServerVariables["REMOTE_USER"].Substring(6);
+                //Session["name"] = "G116036";
+                Session["name"] = Request.ServerVariables["REMOTE_USER"].Substring(6);
 
                 if (Session["name"].ToString() != "")
                 {
