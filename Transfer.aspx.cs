@@ -8,6 +8,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Configuration;
+using System.Threading.Tasks;
+using System.Web.UI.HtmlControls;
+using System.Xml.Linq;
 
 namespace Route
 {
@@ -16,7 +19,7 @@ namespace Route
         SqlConnection con = new SqlConnection(ConfigurationManager.AppSettings["SqlConn"].ToString());
         DataTable dt = new DataTable();
         DataTable resdt = new DataTable();
-        DataSet ds1 = new DataSet();
+        public DataSet ds1 = new DataSet();
         bool anyCheckboxSelected = false;
 
         protected void Page_Load(object sender, EventArgs e)
@@ -24,6 +27,10 @@ namespace Route
             if (!IsPostBack)
             {
                 AccessLoad();
+
+                bool isGridVisible = Session["IsGridVisible"] != null && (bool)Session["IsGridVisible"];
+                ToDistExistViewGrid.Visible = isGridVisible;
+                View.Text = isGridVisible ? "Hide" : "View";
             }
         }
 
@@ -41,11 +48,16 @@ namespace Route
                     {
                         con.Open();
                     }
-                    SqlCommand cmd1 = new SqlCommand("SP_Route_Map_Dropdowns", con);
+                    SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
                     cmd1.CommandType = CommandType.StoredProcedure;
                     cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                     cmd1.Parameters.AddWithValue("@ActionType", "Session");
                     cmd1.Parameters.AddWithValue("@DistCode", "");
+                    cmd1.Parameters.AddWithValue("@StateID", "");
+                    cmd1.Parameters.AddWithValue("@AreaID", "");
+                    cmd1.Parameters.AddWithValue("@ZoneID", "");
+                    cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                    cmd1.Parameters.AddWithValue("@RouteCode", "");
 
                     cmd1.CommandTimeout = 6000;
                     SqlDataAdapter da = new SqlDataAdapter(cmd1);
@@ -57,6 +69,8 @@ namespace Route
                         lblUserName.Text = "Welcome : " + resdt.Rows[0][0].ToString();
                         hdnBusinessType.Value = resdt.Rows[0][2].ToString();
                         hdnRole.Value = resdt.Rows[0][3].ToString();
+
+                        StateLoad();
                     }
                     else
                     {
@@ -77,59 +91,226 @@ namespace Route
         #endregion
 
         #region SelectTypeTransferButtons
-        protected void RouteTransferBtn_Click(object sender, EventArgs e)
-        {
-            RouteTransferBtn_Submit();
-        }
-        protected void RetTransferBtn_Click(object sender, EventArgs e)
-        {
-            RetTransferBtn_Submit();
-        }
-        public void RouteTransferBtn_Submit()
-        {
-            RouteTransferBtn.CssClass = "btn btn-info form-control";
-            RetTransferBtn.CssClass = "btn btn-outline-info form-control";
+        //protected void RouteTransferBtn_Click(object sender, EventArgs e)
+        //{
+        //    RouteTransferBtn_Submit();
+        //}
+        //protected void RetTransferBtn_Click(object sender, EventArgs e)
+        //{
+        //    RetTransferBtn_Submit();
+        //}
+        //public void RouteTransferBtn_Submit()
+        //{
+        //    RouteTransferBtn.CssClass = "btn btn-info form-control";
+        //    RetTransferBtn.CssClass = "btn btn-outline-info form-control";
 
-            routeTransferDiv.Visible = true;
-            retailerTransferDiv.Visible = false;
+        //    routeTransferDiv.Visible = true;
+        //    retailerTransferDiv.Visible = false;
 
-            
+        //    LabelId.Text = "Route";
 
-            RouteFromDistLoad();
-        }
-        public void RetTransferBtn_Submit()
-        {
-            RouteTransferBtn.CssClass = "btn btn-outline-info form-control";
-            RetTransferBtn.CssClass = "btn btn-info form-control";
+        //    //RouteFromDistLoad();
+        //}
+        //public void RetTransferBtn_Submit()
+        //{
+        //    RouteTransferBtn.CssClass = "btn btn-outline-info form-control";
+        //    RetTransferBtn.CssClass = "btn btn-info form-control";
 
-            routeTransferDiv.Visible = false;
-            retailerTransferDiv.Visible = true;
+        //    routeTransferDiv.Visible = false;
+        //    retailerTransferDiv.Visible = true;
 
-            RouteTransExistGridView.DataSource = null;
-            RouteTransExistGridView.DataBind();
+        //    LabelId.Text = "Retailer";
 
-            RouteTransSplitGridView.DataSource = null;
-            RouteTransSplitGridView.DataBind();
+        //    RouteTransExistGridView.DataSource = null;
+        //    RouteTransExistGridView.DataBind();
 
-            RetFromDistLoad();
-        }
+        //    RouteTransSplitGridView.DataSource = null;
+        //    RouteTransSplitGridView.DataBind();
+
+        //    RetFromDistLoad();
+        //}
         #endregion
 
         #region SelectedIndexChanged
         protected void FromDistDrp_SelectedIndexChanged(object sender, EventArgs e)
         {
-            RouteToDistLoad();
+            //RouteToDistLoad();
         }
         protected void TypeDrp_SelectedIndexChanged(object sender, EventArgs e)
         {
             string val = TypeDrp.SelectedValue;
             if (val == "Existing")
             {
+                TypeDrpSelected.Visible = true;
+                btnOpenModal.Visible = false;
                 GetRouteTransExistGridView();
+            }
+            else if (val == "Split")
+            {
+                btnOpenModal.Visible = true;
+                TypeDrpSelected.Visible = false;
+                GetRouteTransSplitGridView();
             }
             else
             {
-                GetRouteTransSplitGridView();
+                btnOpenModal.Visible = false;
+                TypeDrpSelected.Visible = false;
+            }
+
+
+
+            RouteToDistLoad();
+        }
+
+        protected void StateDrp_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AreaLoad();
+        }
+
+        protected void AreaDrp_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ZoneLoad();
+        }
+
+        protected void ZoneDrp_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ToDistDrp.ClearSelection();
+            resdt.Rows.Clear();
+            ToDistDrp.DataSource = resdt;
+            ToDistDrp.DataBind();
+            ToDistDrp.Items.Insert(0, new ListItem("To Distributor", ""));
+
+            RouteFromDistLoad();
+        }
+
+        protected void RouteTransToDistDrp_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RouteTransToDistExistCheck();
+        }
+        #endregion
+
+        #region StateLoad
+        public void StateLoad()
+        {
+            try
+            {
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                }
+                SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
+                cmd1.CommandType = CommandType.StoredProcedure;
+                cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                cmd1.Parameters.AddWithValue("@ActionType", "StateLoad");
+                cmd1.Parameters.AddWithValue("@DistCode", "");
+                cmd1.Parameters.AddWithValue("@StateID", "");
+                cmd1.Parameters.AddWithValue("@AreaID", "");
+                cmd1.Parameters.AddWithValue("@ZoneID", "");
+                cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                cmd1.Parameters.AddWithValue("@RouteCode", "");
+
+                cmd1.ExecuteNonQuery();
+
+                cmd1.CommandTimeout = 6000;
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                resdt.Rows.Clear();
+                da.Fill(resdt);
+                StateDrp.DataSource = resdt;
+                StateDrp.DataTextField = resdt.Columns["StateName"].ToString();
+                StateDrp.DataValueField = resdt.Columns["StateId"].ToString();
+                StateDrp.DataBind();
+                StateDrp.Items.Insert(0, new ListItem("State", ""));
+                con.Close();
+
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+        #endregion
+
+        #region AreaLoad
+        public void AreaLoad()
+        {
+            try
+            {
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                }
+                SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
+                cmd1.CommandType = CommandType.StoredProcedure;
+                cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                cmd1.Parameters.AddWithValue("@ActionType", "AreaLoad");
+                cmd1.Parameters.AddWithValue("@DistCode", "");
+                cmd1.Parameters.AddWithValue("@StateID", StateDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@AreaID", "");
+                cmd1.Parameters.AddWithValue("@ZoneID", "");
+                cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                cmd1.Parameters.AddWithValue("@RouteCode", "");
+
+                cmd1.ExecuteNonQuery();
+
+                cmd1.CommandTimeout = 6000;
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                resdt.Rows.Clear();
+                da.Fill(resdt);
+                AreaDrp.DataSource = resdt;
+                AreaDrp.DataTextField = resdt.Columns["AreaName"].ToString();
+                AreaDrp.DataValueField = resdt.Columns["AreaId"].ToString();
+                AreaDrp.DataBind();
+                AreaDrp.Items.Insert(0, new ListItem("Area", ""));
+                con.Close();
+
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+        #endregion
+
+        #region ZoneLoad
+        public void ZoneLoad()
+        {
+            try
+            {
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                }
+                SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
+                cmd1.CommandType = CommandType.StoredProcedure;
+                cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                cmd1.Parameters.AddWithValue("@ActionType", "ZoneLoad");
+                cmd1.Parameters.AddWithValue("@DistCode", "");
+                cmd1.Parameters.AddWithValue("@StateID", StateDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@AreaID", AreaDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@ZoneID", "");
+                cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                cmd1.Parameters.AddWithValue("@RouteCode", "");
+
+                cmd1.ExecuteNonQuery();
+
+                cmd1.CommandTimeout = 6000;
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                resdt.Rows.Clear();
+                da.Fill(resdt);
+                ZoneDrp.DataSource = resdt;
+                ZoneDrp.DataTextField = resdt.Columns["DistrictName"].ToString();
+                ZoneDrp.DataValueField = resdt.Columns["DistrictId"].ToString();
+                ZoneDrp.DataBind();
+                ZoneDrp.Items.Insert(0, new ListItem("Zone", ""));
+                con.Close();
+
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
             }
         }
         #endregion
@@ -148,6 +329,12 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "RouteTransFromDistLoad");
                 cmd1.Parameters.AddWithValue("@DistCode", "");
+                cmd1.Parameters.AddWithValue("@StateID", StateDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@AreaID", AreaDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@ZoneID", ZoneDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                cmd1.Parameters.AddWithValue("@RouteCode", "");
+
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -183,6 +370,12 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "RouteTransToDistLoad");
                 cmd1.Parameters.AddWithValue("@DistCode", FromDistDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@StateID", StateDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@AreaID", AreaDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@ZoneID", ZoneDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                cmd1.Parameters.AddWithValue("@RouteCode", "");
+
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -218,6 +411,12 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "RouteTransExistGrid");
                 cmd1.Parameters.AddWithValue("@DistCode", FromDistDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@StateID", "");
+                cmd1.Parameters.AddWithValue("@AreaID", "");
+                cmd1.Parameters.AddWithValue("@ZoneID", "");
+                cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                cmd1.Parameters.AddWithValue("@RouteCode", "");
+
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -238,6 +437,9 @@ namespace Route
                 {
                     RouteTransExistGridView.DataSource = null;
                     RouteTransExistGridView.DataBind();
+
+                    RouteTransSplitGridView.DataSource = null;
+                    RouteTransSplitGridView.DataBind();
                 }
 
                 con.Close();
@@ -263,6 +465,12 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "RouteTransSplitGrid");
                 cmd1.Parameters.AddWithValue("@DistCode", FromDistDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@StateID", "");
+                cmd1.Parameters.AddWithValue("@AreaID", "");
+                cmd1.Parameters.AddWithValue("@ZoneID", "");
+                cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                cmd1.Parameters.AddWithValue("@RouteCode", "");
+
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -278,11 +486,17 @@ namespace Route
 
                     RouteTransSplitGridView.DataSource = resdt;
                     RouteTransSplitGridView.DataBind();
+
+                    RouteSplitTransModal.DataSource = resdt;
+                    RouteSplitTransModal.DataBind();
                 }
                 else
                 {
                     RouteTransSplitGridView.DataSource = null;
                     RouteTransSplitGridView.DataBind();
+
+                    RouteTransExistGridView.DataSource = null;
+                    RouteTransExistGridView.DataBind();
                 }
 
                 con.Close();
@@ -294,8 +508,173 @@ namespace Route
         }
         #endregion
 
+        #region View_Click
+        protected void View_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Check if the grid is currently visible
+                bool isGridVisible = Session["IsGridVisible"] != null && (bool)Session["IsGridVisible"];
 
+                // Toggle visibility
+                isGridVisible = !isGridVisible;
+                Session["IsGridVisible"] = isGridVisible;
 
+                if (isGridVisible)
+                {
+                    // Bind the data and show the grid
+                    DataTable dt = Session["RouteDataSet"] as DataTable;
+                    ToDistExistViewGrid.DataSource = dt;
+                    ToDistExistViewGrid.DataBind();
+
+                    // Show grid and scroll to it
+                    ToDistExistViewGrid.Visible = true;
+                    View.Text = "Hide";
+                    ClientScript.RegisterStartupScript(this.GetType(), "ScrollToGrid", "scrollToGrid(true);", true);
+                }
+                else
+                {
+                    // Hide the grid
+                    ToDistExistViewGrid.DataSource = null;
+                    ToDistExistViewGrid.DataBind();
+
+                    ToDistExistViewGrid.Visible = false;
+                    View.Text = "View";
+                    ClientScript.RegisterStartupScript(this.GetType(), "RemoveFocus", "scrollToGrid(false);", true);
+                }
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+        #endregion
+
+        #region RouteTransferSubmit_Click
+        protected void RouteTransferSubmit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string state = StateDrp.SelectedValue;
+                string area = AreaDrp.SelectedValue;
+                string zone = ZoneDrp.SelectedValue;
+                string fromDist = FromDistDrp.SelectedValue;
+                string typeDrp = TypeDrp.SelectedValue;
+                string toDist = ToDistDrp.SelectedValue;
+                List<string> checkedRoutes = new List<string>();
+                List<string> messages = new List<string>();
+
+                if (TypeDrp.SelectedValue == "Existing")
+                {
+                    foreach (GridViewRow row in RouteTransExistGridView.Rows)
+                    {
+                        HtmlInputCheckBox chkBox = (HtmlInputCheckBox)row.FindControl("CheckBox1");
+                        if (chkBox != null && chkBox.Checked)
+                        {
+                            string routeCode = row.Cells[1].Text;
+                            checkedRoutes.Add(routeCode);
+                            anyCheckboxSelected = true;
+                        }
+                    }
+                }
+                else if (TypeDrp.SelectedValue == "Split")
+                {
+                    foreach (GridViewRow row in RouteSplitTransModal.Rows)
+                    {
+                        HtmlInputCheckBox chkBox = (HtmlInputCheckBox)row.FindControl("CheckBox1");
+                        if (chkBox != null && chkBox.Checked)
+                        {
+                            string routeCode = row.Cells[0].Text;
+                            checkedRoutes.Add(routeCode);
+                            anyCheckboxSelected = true;
+                        }
+                    }
+                }
+
+                if (state == "")
+                {
+                    showToast("Please select State", "toast-danger");
+                    return;
+                }
+                else if (area == "")
+                {
+                    showToast("Please select Area", "toast-danger");
+                    return;
+                }
+                else if (zone == "")
+                {
+                    showToast("Please select Zone", "toast-danger");
+                    return;
+                }
+                else if (fromDist == "")
+                {
+                    showToast("Please select From Distributor", "toast-danger");
+                    return;
+                }
+                else if (typeDrp == "")
+                {
+                    showToast("Please select Transfer Type", "toast-danger");
+                    return;
+                }
+                else if (!anyCheckboxSelected)
+                {
+                    showToast("Please select any Route to Transfer", "toast-danger");
+                    return;
+                }
+                else if (toDist == "")
+                {
+                    showToast("Please select To Distributor", "toast-danger");
+                    return;
+                }
+
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                }
+
+                foreach (string routeCode in checkedRoutes)
+                {
+                    SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
+                    cmd1.CommandType = CommandType.StoredProcedure;
+                    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                    cmd1.Parameters.AddWithValue("@ActionType", "RouteTransferBtnClick");
+                    cmd1.Parameters.AddWithValue("@DistCode", FromDistDrp.SelectedValue);
+                    cmd1.Parameters.AddWithValue("@StateID", "");
+                    cmd1.Parameters.AddWithValue("@AreaID", "");
+                    cmd1.Parameters.AddWithValue("@ZoneID", "");
+                    cmd1.Parameters.AddWithValue("@ToDistCode", ToDistDrp.SelectedValue);
+                    cmd1.Parameters.AddWithValue("@RouteCode", routeCode);
+
+                    cmd1.CommandTimeout = 60000;
+
+                    using (SqlDataReader reader = cmd1.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            // Collect each response message in the list
+                            string message = reader[0].ToString();
+                            if (!string.IsNullOrEmpty(message))
+                            {
+                                messages.Add(message);
+                            }
+                        }
+                    }
+
+                }
+
+                con.Close();
+
+                string script = "showMessagesWithDelay(" + Newtonsoft.Json.JsonConvert.SerializeObject(messages) + ");";
+                ClientScript.RegisterStartupScript(this.GetType(), "showMessages", script, true);
+
+                ClearForm();
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+        #endregion
 
         #region RetFromDistLoad
         public void RetFromDistLoad()
@@ -311,6 +690,11 @@ namespace Route
                 //cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 //cmd1.Parameters.AddWithValue("@ActionType", "FromDistLoad");
                 //cmd1.Parameters.AddWithValue("@DistCode", FromDistDrp.SelectedValue);
+                //cmd1.Parameters.AddWithValue("@StateID", "");
+                //cmd1.Parameters.AddWithValue("@AreaID", "");
+                //cmd1.Parameters.AddWithValue("@ZoneID", "");
+                //cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                //cmd1.Parameters.AddWithValue("@RouteCode", "");
                 //cmd1.ExecuteNonQuery();
 
                 //cmd1.CommandTimeout = 6000;
@@ -340,9 +724,175 @@ namespace Route
 
         #endregion
 
-        protected void RouteTransferSubmit_Click(object sender, EventArgs e)
+        #region ClearForm
+        private void ClearForm()
         {
-            showToast("Toast is working fine...", "toast-success");
+            StateDrp.ClearSelection();
+            AreaDrp.ClearSelection();
+            ZoneDrp.ClearSelection();
+            FromDistDrp.ClearSelection();
+            TypeDrp.ClearSelection();
+            ToDistDrp.ClearSelection();
+
+            TypeDrpSelected.Text = string.Empty;
+            TypeDrpSelected.Visible = false;
+            btnOpenModal.Visible = false;
+
+            RouteTransExistGridView.DataSource = null;
+            RouteTransExistGridView.DataBind();
+
+            RouteTransSplitGridView.DataSource = null;
+            RouteTransSplitGridView.DataBind();
+
+            ToDistExistViewGrid.DataSource = null;
+            ToDistExistViewGrid.DataBind();
+
+            btnDivSplit.Visible = false;
+            btnDivSingle.Visible = true;
+
+            foreach (GridViewRow row in RouteSplitTransModal.Rows)
+            {
+                HtmlInputCheckBox chk = (HtmlInputCheckBox)row.FindControl("CheckBox1");
+                if (chk != null)
+                {
+                    chk.Checked = false;
+                }
+            }
         }
+
+        #endregion
+
+        #region Helpers
+        public void RouteTransToDistExistCheck()
+        {
+            try
+            {
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                }
+                SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
+                cmd1.CommandType = CommandType.StoredProcedure;
+                cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                cmd1.Parameters.AddWithValue("@ActionType", "ViewExistinfToDistRouteDetails");
+                cmd1.Parameters.AddWithValue("@DistCode", "");
+                cmd1.Parameters.AddWithValue("@StateID", "");
+                cmd1.Parameters.AddWithValue("@AreaID", "");
+                cmd1.Parameters.AddWithValue("@ZoneID", "");
+                cmd1.Parameters.AddWithValue("@ToDistCode", ToDistDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@RouteCode", "");
+
+                cmd1.ExecuteNonQuery();
+
+                cmd1.CommandTimeout = 6000;
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                resdt.Clear();
+                da.Fill(resdt);
+
+                Session["RouteDataSet"] = resdt;
+
+                if (resdt.Rows.Count > 0)
+                {
+                    btnDivSplit.Visible = true;
+                    btnDivSingle.Visible = false;
+
+                    View.ToolTip = $"View {ToDistDrp.SelectedValue} Route Details";
+                }
+                else
+                {
+                    btnDivSplit.Visible = false;
+                    btnDivSingle.Visible = true;
+
+                    ToDistExistViewGrid.DataSource = null;
+                    ToDistExistViewGrid.DataBind();
+                }
+
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+        protected void RouteTransExistGridView_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.Header)
+            {
+                // Create a new row
+                GridViewRow headerRow = new GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Insert);
+
+                // Create a new cell with a colspan that matches the number of columns you want to span
+                TableCell headerCell = new TableCell
+                {
+                    Text = $"From Distributor, {FromDistDrp.SelectedItem.Text} Active Routes and Route Details",
+                    ColumnSpan = RouteTransExistGridView.Columns.Count, // Set colspan to the total number of columns
+                    HorizontalAlign = HorizontalAlign.Center,
+                    CssClass = "font-weight-bold", // Optional: Add CSS class for styling
+                    BackColor = System.Drawing.ColorTranslator.FromHtml("#b3d6ff"),
+                    ForeColor = System.Drawing.ColorTranslator.FromHtml("#ffffff")
+                };
+
+                // Add the cell to the row
+                headerRow.Cells.Add(headerCell);
+
+                // Insert the row at the top of the GridView
+                RouteTransExistGridView.Controls[0].Controls.AddAt(0, headerRow);
+            }
+        }
+
+        protected void RouteTransSplitGridView_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.Header)
+            {
+                // Create a new row
+                GridViewRow headerRow = new GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Insert);
+
+                // Create a new cell with a colspan that matches the number of columns you want to span
+                TableCell headerCell = new TableCell
+                {
+                    Text = $"From Distributor, {FromDistDrp.SelectedItem.Text} Active Routes and Route Details",
+                    ColumnSpan = RouteTransSplitGridView.Columns.Count, // Set colspan to the total number of columns
+                    HorizontalAlign = HorizontalAlign.Center,
+                    CssClass = "font-weight-bold", // Optional: Add CSS class for styling
+                    BackColor = System.Drawing.ColorTranslator.FromHtml("#b3d6ff"),
+                    ForeColor = System.Drawing.ColorTranslator.FromHtml("#ffffff")
+                };
+
+                // Add the cell to the row
+                headerRow.Cells.Add(headerCell);
+
+                // Insert the row at the top of the GridView
+                RouteTransSplitGridView.Controls[0].Controls.AddAt(0, headerRow);
+            }
+        }
+
+        protected void ToDistExistViewGrid_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.Header)
+            {
+                // Create a new row
+                GridViewRow headerRow = new GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Insert);
+
+                // Create a new cell with a colspan that matches the number of columns you want to span
+                TableCell headerCell = new TableCell
+                {
+                    Text = $"To Distributor, {ToDistDrp.SelectedItem.Text} existing Routes and Route Details",
+                    ColumnSpan = ToDistExistViewGrid.Columns.Count, // Set colspan to the total number of columns
+                    HorizontalAlign = HorizontalAlign.Center,
+                    CssClass = "font-weight-bold", // Optional: Add CSS class for styling
+                    BackColor = System.Drawing.ColorTranslator.FromHtml("#b3d6ff"),
+                    ForeColor = System.Drawing.ColorTranslator.FromHtml("#ffffff")
+                };
+
+                // Add the cell to the row
+                headerRow.Cells.Add(headerCell);
+
+                // Insert the row at the top of the GridView
+                ToDistExistViewGrid.Controls[0].Controls.AddAt(0, headerRow);
+            }
+        }
+        #endregion
+
     }
 }

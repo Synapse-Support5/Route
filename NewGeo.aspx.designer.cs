@@ -11,17 +11,44 @@ namespace Route
 {
 
 
-    public partial class Transfer
+    public partial class NewGeo
     {
 
         /// <summary>
-        /// form2 control.
+        /// form1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form2;
+        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+
+        /// <summary>
+        /// HomeLink control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor HomeLink;
+
+        /// <summary>
+        /// CreateLink control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor CreateLink;
+
+        /// <summary>
+        /// ModifyLink control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor ModifyLink;
 
         /// <summary>
         /// lblUserName control.
@@ -42,85 +69,13 @@ namespace Route
         protected global::System.Web.UI.WebControls.Label lbl_msg;
 
         /// <summary>
-        /// routeTransferDiv control.
+        /// DistCodeTxt control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl routeTransferDiv;
-
-        /// <summary>
-        /// StateDrp control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList StateDrp;
-
-        /// <summary>
-        /// AreaDrp control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList AreaDrp;
-
-        /// <summary>
-        /// ZoneDrp control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ZoneDrp;
-
-        /// <summary>
-        /// FromDistDrp control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList FromDistDrp;
-
-        /// <summary>
-        /// TypeDrp control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList TypeDrp;
-
-        /// <summary>
-        /// TypeDrpSelected control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TypeDrpSelected;
-
-        /// <summary>
-        /// btnOpenModal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton btnOpenModal;
-
-        /// <summary>
-        /// ToDistDrp control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ToDistDrp;
+        protected global::System.Web.UI.WebControls.TextBox DistCodeTxt;
 
         /// <summary>
         /// btnDivSingle control.
@@ -132,13 +87,13 @@ namespace Route
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl btnDivSingle;
 
         /// <summary>
-        /// RouteTransferSubmit control.
+        /// EnterSubmit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button RouteTransferSubmit;
+        protected global::System.Web.UI.WebControls.Button EnterSubmit;
 
         /// <summary>
         /// btnDivSplit control.
@@ -150,58 +105,49 @@ namespace Route
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl btnDivSplit;
 
         /// <summary>
-        /// View control.
+        /// FileUpload_Id control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button View;
+        protected global::System.Web.UI.WebControls.FileUpload FileUpload_Id;
 
         /// <summary>
-        /// RouteTransferSubmitH control.
+        /// btnDivSplit2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button RouteTransferSubmitH;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl btnDivSplit2;
 
         /// <summary>
-        /// RouteTransExistGridView control.
+        /// SubmitBtn control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView RouteTransExistGridView;
+        protected global::System.Web.UI.WebControls.Button SubmitBtn;
 
         /// <summary>
-        /// RouteTransSplitGridView control.
+        /// btnContinue control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView RouteTransSplitGridView;
+        protected global::System.Web.UI.WebControls.Button btnContinue;
 
         /// <summary>
-        /// ToDistExistViewGrid control.
+        /// GridView1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView ToDistExistViewGrid;
-
-        /// <summary>
-        /// RouteSplitTransModal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView RouteSplitTransModal;
+        protected global::System.Web.UI.WebControls.GridView GridView1;
 
         /// <summary>
         /// hdnBusinessType control.

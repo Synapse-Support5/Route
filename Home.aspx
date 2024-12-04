@@ -108,6 +108,9 @@
                         <li class="nav-item">
                             <a class="nav-link" runat="server" href="~/Transfer">Transfer</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/NewGeo">NewGeo</a>
+                        </li>
                     </ul>
                 </div>
             </div>

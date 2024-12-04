@@ -448,9 +448,14 @@ namespace Route
 
                 foreach (DataRow row in resdt.Rows)
                 {
-                    if (Convert.ToInt32(row["Value"]) == 1)
+                    if (Convert.ToInt32(row["RtCodeExists"]) == 1)
                     {
                         showToast("Distcode " + distId + " is already having route " + rtCode, "toast-danger");
+                        return;
+                    }
+                    else if (Convert.ToInt32(row["RtNmExists"]) == 1)
+                    {
+                        showToast("Distcode " + distId + " is already having route " + rtName, "toast-danger");
                         return;
                     }
                     else

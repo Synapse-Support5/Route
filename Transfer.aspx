@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
     <style>
         .toast-custom {
@@ -123,6 +124,35 @@
             $('#noteAlert2').hide();
         }
     </script>
+
+    <%--script for scroll to grid from view button--%>
+    <script type="text/javascript">
+        function scrollToGrid(isVisible) {
+            var grid = document.getElementById('<%= ToDistExistViewGrid.ClientID %>');
+            if (grid) {
+                if (isVisible) {
+                    grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    // Scroll back to the top (or another element) when hiding the grid
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+        }
+    </script>
+
+    <%--script to get all toasts at a time on Transfer button click--%>
+    <script type="text/javascript">
+        function showMessagesWithDelay(messages) {
+            let delay = 2000; // 2 seconds
+
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    showToast(msg, "toast-success");
+                }, index * delay);
+            });
+        }
+    </script>
+
 </head>
 <body>
     <form id="form2" runat="server">
@@ -147,6 +177,9 @@
                         <li class="nav-item">
                             <a class="nav-link" runat="server" href="~/Transfer">Transfer</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/NewGeo">NewGeo</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -164,10 +197,12 @@
                     </td>
                 </tr>
             </table>
-            <h2 style="text-align: center; margin-top: 20px;">Transfer Route</h2>
+            <h2 style="text-align: center; margin-top: 20px;">Transfer Route
+                <%--<asp:Label runat="server" ID="LabelId" Text=""></asp:Label>--%>
+            </h2>
             <br />
 
-            <div class="container">
+            <%--  <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
                         <asp:Button ID="RouteTransferBtn" runat="server" Text="Route Transfer" CssClass="btn btn-outline-info form-control" OnClick="RouteTransferBtn_Click" />
@@ -176,20 +211,32 @@
                         <asp:Button ID="RetTransferBtn" runat="server" Text="Retailer Transfer" CssClass="btn btn-outline-info form-control" OnClick="RetTransferBtn_Click" />
                     </div>
                 </div>
-            </div>
+            </div>--%>
 
-            <div id="routeTransferDiv" runat="server" class="container mt-3" visible="false">
-                <div class="row">
+            <div id="routeTransferDiv" runat="server" class="container mt-3">
+                <div class="row mb-3">
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <asp:DropDownList ID="StateDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="StateDrp_SelectedIndexChanged">
+                            <asp:ListItem Text="State" Value=""></asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <asp:DropDownList ID="AreaDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="AreaDrp_SelectedIndexChanged">
+                            <asp:ListItem Text="Area" Value=""></asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <asp:DropDownList ID="ZoneDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="ZoneDrp_SelectedIndexChanged">
+                            <asp:ListItem Text="Zone" Value=""></asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
                         <asp:DropDownList ID="FromDistDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="FromDistDrp_SelectedIndexChanged">
                             <asp:ListItem Text="From Distributor" Value=""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="ToDistDrp" runat="server" AutoPostBack="true" class="form-control">
-                            <asp:ListItem Text="To Distributor" Value=""></asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
+                </div>
+                <div class="row mb-3">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
                         <asp:DropDownList ID="TypeDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="TypeDrp_SelectedIndexChanged">
                             <asp:ListItem Text="Transfer Type" Value=""></asp:ListItem>
@@ -197,8 +244,38 @@
                             <asp:ListItem Text="Split" Value="Split"></asp:ListItem>
                         </asp:DropDownList>
                     </div>
+
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:Button ID="RouteTransferSubmit" runat="server" Text="Transfer" CssClass="btn btn-success form-control" OnClick="RouteTransferSubmit_Click" />
+                        <asp:TextBox ID="TypeDrpSelected" runat="server" CssClass="form-control" placeholder="Existing" ReadOnly="true" Visible="false"></asp:TextBox>
+                        <button type="button" class="form-control" id="btnOpenModal" runat="server" data-toggle="modal" data-target="#exampleModalCenter" visible="false">
+                            Split
+                        </button>
+                    </div>
+
+                    <%--<div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <button type="button" class="form-control" id="btnOpenModal" data-toggle="modal" data-target="#exampleModalCenter">
+                            Split
+                        </button>
+                    </div>--%>
+
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <asp:DropDownList ID="ToDistDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="RouteTransToDistDrp_SelectedIndexChanged">
+                            <asp:ListItem Text="To Distributor" Value=""></asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                    <div id="btnDivSingle" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="true">
+                        <asp:Button ID="RouteTransferSubmit" runat="server" Text="Transfer" CssClass="btn btn-success form-control"
+                            OnClick="RouteTransferSubmit_Click" />
+                    </div>
+
+                    <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
+                        <div style="display: flex;">
+                            <asp:Button ID="View" runat="server" Text="View" CssClass="btn btn-info form-control" Style="border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; width: 30%; margin-right: 5px;"
+                                OnClick="View_Click" />
+                            <asp:Button ID="RouteTransferSubmitH" runat="server" Text="Transfer" CssClass="btn btn-success form-control"
+                                Style="border-top-left-radius: 0; border-bottom-left-radius: 0; width: 70%;"
+                                OnClick="RouteTransferSubmit_Click" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -207,28 +284,7 @@
                 <div class="col-12">
                     <div class="grid-wrapper">
                         <asp:GridView ID="RouteTransExistGridView" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;">
-                            <Columns>
-                                <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
-                                <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
-                                <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
-                                <asp:BoundField DataField="MnfCde" HeaderText="MNFCode" />
-                                <asp:BoundField DataField="RouteTypeName" HeaderText="RouteType" />
-                                <asp:BoundField DataField="CoverageName" HeaderText="RouteCoverage" />
-                                <asp:BoundField DataField="WeekDay" HeaderText="Call Days" />
-                                <asp:BoundField DataField="Status" HeaderText="Status" />
-
-                            </Columns>
-                        </asp:GridView>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="RouteTransSplitGridView" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;">
+                            Style="margin-bottom: 0px; text-align: center;" OnRowCreated="RouteTransExistGridView_RowCreated">
                             <Columns>
                                 <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
                                 <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
@@ -240,6 +296,35 @@
                                 <asp:BoundField DataField="Status" HeaderText="Status" />
 
                                 <asp:TemplateField>
+                                    <ItemTemplate>
+                                        <div style="margin-right: 10px;">
+                                            <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox" style="position: relative; margin-left: -3px;" checked="checked" disabled="disabled" />
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="grid-wrapper">
+                        <asp:GridView ID="RouteTransSplitGridView" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                            Style="margin-bottom: 0px; text-align: center;" OnRowCreated="RouteTransSplitGridView_RowCreated">
+                            <Columns>
+                                <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
+                                <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
+                                <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
+                                <asp:BoundField DataField="MnfCde" HeaderText="MNFCode" />
+                                <asp:BoundField DataField="RouteTypeName" HeaderText="RouteType" />
+                                <asp:BoundField DataField="CoverageName" HeaderText="RouteCoverage" />
+                                <asp:BoundField DataField="WeekDay" HeaderText="Call Days" />
+                                <asp:BoundField DataField="Status" HeaderText="Status" />
+
+                                <%--<asp:TemplateField>
                                     <HeaderTemplate>
                                         <div style="margin-right: 10px;">
                                             <input type="checkbox" id="selectAllCheckBox" runat="server" style="margin-left: -3px;" class="form-check-input" onclick="selectAllCheckboxes(this)" />
@@ -247,17 +332,39 @@
                                     </HeaderTemplate>
                                     <ItemTemplate>
                                         <div style="margin-right: 10px;">
-                                            <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox" style="margin-left: -3px;" />
+                                            <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox" style="margin-left: -3px;"
+                                                onclick="handleCheckboxClick(this)" />
                                         </div>
                                     </ItemTemplate>
-                                </asp:TemplateField>
+                                </asp:TemplateField>--%>
                             </Columns>
                         </asp:GridView>
                     </div>
                 </div>
             </div>
 
-            <div id="retailerTransferDiv" runat="server" class="container" visible="false">
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="grid-wrapper">
+                        <asp:GridView ID="ToDistExistViewGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                            Style="margin-bottom: 0px; text-align: center;" OnRowCreated="ToDistExistViewGrid_RowCreated">
+                            <Columns>
+                                <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
+                                <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
+                                <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
+                                <asp:BoundField DataField="MnfCde" HeaderText="MNFCode" />
+                                <asp:BoundField DataField="RouteTypeName" HeaderText="RouteType" />
+                                <asp:BoundField DataField="CoverageName" HeaderText="RouteCoverage" />
+                                <asp:BoundField DataField="WeekDay" HeaderText="Call Days" />
+                                <asp:BoundField DataField="Status" HeaderText="Status" />
+
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </div>
+
+            <%-- <div id="retailerTransferDiv" runat="server" class="container" visible="false">
                 <div class="row">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
                         <asp:DropDownList ID="DropDownList1" runat="server" AutoPostBack="true" class="form-control">
@@ -281,6 +388,47 @@
                     </div>
                 </div>
 
+            </div>--%>
+        </div>
+
+        <%-- Modal for Split Transfer --%>
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Routes</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                        <div class="form-group">
+                            <asp:GridView ID="RouteSplitTransModal" runat="server" AutoPostBack="True" CssClass="table table-bordered form-group"
+                                AutoGenerateColumns="false" DataKeyNames="" Style="margin-bottom: -18px; text-align: center">
+                                <Columns>
+                                    <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
+                                    <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
+
+                                    <asp:TemplateField>
+                                        <ItemTemplate>
+                                            <div style="margin-right: 10px;">
+                                                <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox" style="margin-left: -3px;"
+                                                    onclick="handleCheckboxClick(this)" />
+                                            </div>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                </Columns>
+                                <HeaderStyle CssClass="header-hidden" />
+                                <RowStyle CssClass="fixed-height-row" BackColor="#FFFFFF" />
+                            </asp:GridView>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -299,5 +447,28 @@
             }
         }
     </script>
+
+    <%--script for SplitGridView Checkboxes to remain any one checkbox--%>
+    <script type="text/javascript">
+        function handleCheckboxClick(checkbox) {
+            // Get all checkboxes
+            const checkboxes = document.querySelectorAll('.rowCheckbox');
+
+            // Count checked checkboxes
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+            // If all but one are checked, disable the remaining unchecked checkbox
+            checkboxes.forEach(cb => {
+                if (!cb.checked && checkedCount === checkboxes.length - 1) {
+                    cb.disabled = true;
+                } else {
+                    cb.disabled = false;
+                }
+            });
+        }
+    </script>
+
+
+
 </body>
 </html>
