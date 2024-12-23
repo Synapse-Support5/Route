@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 
     <style>
         .toast-custom {
@@ -82,6 +83,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function showToast(message, styleClass) {
             var toast = $('<div class="toast-custom ' + styleClass + '">' + message + '</div>').appendTo('#toastContainer');
@@ -298,7 +300,7 @@
                                 <asp:TemplateField>
                                     <ItemTemplate>
                                         <div style="margin-right: 10px;">
-                                            <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox" style="position: relative; margin-left: -3px;" checked="checked" disabled="disabled" />
+                                            <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input" style="position: relative; margin-left: -3px;" checked="checked" disabled="disabled" />
                                         </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
@@ -346,6 +348,37 @@
             <div class="row mt-3">
                 <div class="col-12">
                     <div class="grid-wrapper">
+                        <asp:GridView ID="RouteTransSplitRetailerGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                            Style="margin-bottom: 0px; text-align: center;" OnRowCreated="RouteTransSplitRetailerGrid_RowCreated">
+                            <Columns>
+                                <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
+                                <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
+                                <asp:BoundField DataField="RtrId" HeaderText="Retailer Id" />
+                                <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
+                                <asp:BoundField DataField="UrCode" HeaderText="UR Code" />
+
+                                <asp:TemplateField>
+                                    <%--<HeaderTemplate>
+                            <div style="margin-right: 10px;">
+                                <input type="checkbox" id="selectAllCheckBox" runat="server" style="margin-left: -3px;" class="form-check-input" onclick="selectAllCheckboxes(this)" />
+                            </div>
+                        </HeaderTemplate>--%>
+                                    <ItemTemplate>
+                                        <div style="margin-right: 10px;">
+                                            <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox2" style="margin-left: -3px;"
+                                                onclick="handleCheckboxClick2(this)" />
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="grid-wrapper">
                         <asp:GridView ID="ToDistExistViewGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
                             Style="margin-bottom: 0px; text-align: center;" OnRowCreated="ToDistExistViewGrid_RowCreated">
                             <Columns>
@@ -363,32 +396,57 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <%-- <div id="retailerTransferDiv" runat="server" class="container" visible="false">
-                <div class="row">
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="DropDownList1" runat="server" AutoPostBack="true" class="form-control">
-                            <asp:ListItem Text="From Dist." Value=""></asp:ListItem>
-                        </asp:DropDownList>
+        <%-- Alert Modal for Retailer Existing Another DBR --%>
+        <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <%--<div class="modal-header">
+                        <h5 class="modal-title" id="">Test Modal</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>--%>
+                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                        <div class="form-group">
+                            <%--<h5>Proceed to Transfer</h5>--%>
+                            <asp:GridView ID="AlertModalGrid" runat="server" AutoPostBack="True" CssClass="table table-bordered form-group"
+                                AutoGenerateColumns="false" DataKeyNames="" Style="margin-bottom: -18px; text-align: center">
+                                <Columns>
+                                    <asp:BoundField DataField="DISTCODE" HeaderText="Dist. Code" />
+                                    <asp:BoundField DataField="DistNm" HeaderText="Dist. Name" />
+                                    <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
+                                    <asp:BoundField DataField="RetailerName" HeaderText="Retailer Name" />
+                                    <asp:BoundField DataField="UrCode" HeaderText="URCode" />
+                                    <asp:BoundField DataField="DistId" HeaderText="Dist ID" />
+
+                                    <%--<asp:TemplateField>
+                                        <ItemTemplate>
+                                            <div style="margin-right: 10px;">
+                                                <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox" style="margin-left: -3px;"
+                                                    onclick="handleCheckboxClick(this)" />
+                                            </div>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>--%>
+                                </Columns>
+                                <HeaderStyle CssClass="header-hidden" />
+                                <RowStyle CssClass="fixed-height-row" BackColor="#FFFFFF" />
+                            </asp:GridView>
+                            <br /><br />
+                            <h5 style="color:red">Retailers are already active in <asp:Label ID="DBR" runat="server"></asp:Label> DBR. Are you sure want to Proceed?</h5><br />
+                            <h5 style="color:red">Note : </h5><p>If you proceed, the mentioned retailers will be set to Inactive for DBR <asp:Label ID="DBR2" runat="server"></asp:Label>.</p>
+                        </div>
                     </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="DropDownList2" runat="server" AutoPostBack="true" class="form-control">
-                            <asp:ListItem Text="To Dist." Value=""></asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="DropDownList3" runat="server" AutoPostBack="true" class="form-control">
-                            <asp:ListItem Text="Transfer Type" Value=""></asp:ListItem>
-                            <asp:ListItem Text="Existing" Value="Existing"></asp:ListItem>
-                            <asp:ListItem Text="Split" Value="Split"></asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:Button ID="RetTransferSubmit" runat="server" Text="Transfer" CssClass="btn btn-success form-control" />
+
+                    <div class="modal-footer">
+                        <asp:Button ID="ProceedBtn" runat="server" Text="Proceed" CssClass="btn btn-success"
+                            OnClick="ProceedBtn_Click" />
+                        <asp:Button ID="CancelBtn" runat="server" Text="Cancel" CssClass="btn btn-danger"
+                            OnClick="CancelBtn_Click" />
                     </div>
                 </div>
-
-            </div>--%>
+            </div>
         </div>
 
         <%-- Modal for Split Transfer --%>
@@ -425,7 +483,9 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>
+                        <%--<button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>--%>
+                        <asp:Button ID="SelectBtn" runat="server" Text="Select" CssClass="btn btn-primary"
+                            OnClick="SelectBtn_Click" />
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -450,6 +510,7 @@
 
     <%--script for SplitGridView Checkboxes to remain any one checkbox--%>
     <script type="text/javascript">
+        // Function to handle checkbox click
         function handleCheckboxClick(checkbox) {
             // Get all checkboxes
             const checkboxes = document.querySelectorAll('.rowCheckbox');
@@ -457,18 +518,38 @@
             // Count checked checkboxes
             const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
 
-            // If all but one are checked, disable the remaining unchecked checkbox
+            // Apply the logic to ensure at least one checkbox remains unchecked
             checkboxes.forEach(cb => {
                 if (!cb.checked && checkedCount === checkboxes.length - 1) {
-                    cb.disabled = true;
+                    cb.disabled = true; // Disable the last unchecked checkbox
                 } else {
-                    cb.disabled = false;
+                    cb.disabled = false; // Enable others
+                }
+            });
+        }
+
+        // This function is triggered when the page is loaded to ensure proper checkbox states
+        window.onload = function () {
+            const checkboxes = document.querySelectorAll('.rowCheckbox');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+            // Apply the logic to ensure at least one checkbox remains unchecked
+            checkboxes.forEach(cb => {
+                if (!cb.checked && checkedCount === checkboxes.length - 1) {
+                    cb.disabled = true; // Disable the last unchecked checkbox
+                } else {
+                    cb.disabled = false; // Enable others
                 }
             });
         }
     </script>
 
 
+    <script>
+        function showModal() {
+            $('#alertModal').modal('show');
+        }
+    </script>
 
 </body>
 </html>

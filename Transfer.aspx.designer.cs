@@ -186,6 +186,15 @@ namespace Route
         protected global::System.Web.UI.WebControls.GridView RouteTransSplitGridView;
 
         /// <summary>
+        /// RouteTransSplitRetailerGrid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView RouteTransSplitRetailerGrid;
+
+        /// <summary>
         /// ToDistExistViewGrid control.
         /// </summary>
         /// <remarks>
@@ -195,6 +204,51 @@ namespace Route
         protected global::System.Web.UI.WebControls.GridView ToDistExistViewGrid;
 
         /// <summary>
+        /// AlertModalGrid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView AlertModalGrid;
+
+        /// <summary>
+        /// DBR control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label DBR;
+
+        /// <summary>
+        /// DBR2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label DBR2;
+
+        /// <summary>
+        /// ProceedBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ProceedBtn;
+
+        /// <summary>
+        /// CancelBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button CancelBtn;
+
+        /// <summary>
         /// RouteSplitTransModal control.
         /// </summary>
         /// <remarks>
@@ -202,6 +256,15 @@ namespace Route
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView RouteSplitTransModal;
+
+        /// <summary>
+        /// SelectBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button SelectBtn;
 
         /// <summary>
         /// hdnBusinessType control.
