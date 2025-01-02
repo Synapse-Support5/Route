@@ -174,9 +174,6 @@ namespace Route
         {
             try
             {
-                ScriptManager.RegisterStartupScript(this, GetType(), "showLoader", "showLoader();", true);
-                //showToast("Please wait, reading data from Excel...", "toast-success");
-
                 if (FileUpload_Id.HasFile)
                 {
                     string fileExtension = Path.GetExtension(FileUpload_Id.FileName);
@@ -215,6 +212,16 @@ namespace Route
                                     cmd.Parameters.AddWithValue("@RtCoverage", "");
 
                                     var existingData = cmd.ExecuteScalar()?.ToString() ?? string.Empty;
+
+                                    if (existingData == string.Empty)
+                                    {
+                                        existingData = "Not Exists";
+                                    }
+                                    else
+                                    {
+                                        existingData = cmd.ExecuteScalar()?.ToString() ?? string.Empty;
+                                    }
+
                                     row["ExistingData"] = existingData;
 
                                     // Set MatchStatus based on comparison
@@ -255,7 +262,7 @@ namespace Route
             finally
             {
                 // Hide the loader at the end
-                ScriptManager.RegisterStartupScript(this, GetType(), "hideLoader", "hideLoader();", true);
+                //ScriptManager.RegisterStartupScript(this, GetType(), "hideLoader", "hideLoader();", true);
             }
         }
         #endregion
@@ -331,7 +338,10 @@ namespace Route
                     dt.Columns.Add("ExistingData", typeof(string));
                     dt.Columns.Add("MatchStatus", typeof(int)); // 0 if same, 1 if different
                     dt.Columns.Add("ROUTE NAME", typeof(string)); // New column for ROUTENAME
+                    dt.Columns.Add("SSM CODE", typeof(string)); 
+                    dt.Columns.Add("SSM NAME", typeof(string)); 
                     dt.Columns.Add("COMPANYCODE", typeof(string));
+                    dt.Columns.Add("LOCALUPCOUNTRY", typeof(string));
                     dt.Columns.Add("FREQUENCY", typeof(string)); 
                     dt.Columns.Add("VANNONVAN", typeof(string)); 
 
@@ -372,7 +382,10 @@ namespace Route
 
                         // Add route-specific data
                         newRow["ROUTE NAME"] = matchingRouteRow?["ROUTE NAME"] ?? DBNull.Value;
+                        newRow["SSM CODE"] = matchingRouteRow?["SSM CODE"] ?? DBNull.Value;
+                        newRow["SSM NAME"] = matchingRouteRow?["SSM NAME"] ?? DBNull.Value;
                         newRow["COMPANYCODE"] = matchingRouteRow?["COMPANYCODE"] ?? DBNull.Value;
+                        newRow["LOCALUPCOUNTRY"] = matchingRouteRow?["LOCALUPCOUNTRY"] ?? DBNull.Value;
                         newRow["FREQUENCY"] = matchingRouteRow?["FREQUENCY"] ?? DBNull.Value;
                         newRow["VANNONVAN"] = matchingRouteRow?["VANNONVAN"] ?? DBNull.Value;
 
@@ -435,7 +448,7 @@ namespace Route
 
             for (int row = 2; row <= sheet.Dimension.Rows; row++)
             {
-                if (sheet.Cells[row, 1].Value == null) continue;
+                if (sheet.Cells[row, 2].Value == null) continue;
 
                 var newRow = table.NewRow();
                 foreach (var column in columnIndices)
@@ -475,13 +488,111 @@ namespace Route
             {
                 showToast("No data available to process.", "toast-danger");
                 return;
-            }
+            }            
 
             foreach (DataRow row in dtExcel.Rows)
             {
-                if (string.IsNullOrWhiteSpace(row["ExistingData"]?.ToString()))
+                if (row["URCODE"].ToString() != "")
                 {
-                    showToast("Classification 1 contains invalid data please correct it and try again", "toast-danger");
+                    showToast("URCODE field should be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["RETAILERCODE"]?.ToString()))
+                {
+                    showToast("RETAILERCODE field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["RETAILER NAME"]?.ToString()))
+                {
+                    showToast("RETAILER NAME field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["ROUTE CODE"]?.ToString()))
+                {
+                    showToast("ROUTE CODE field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["CLASSIFICATION CODE"]?.ToString()))
+                {
+                    showToast("CLASSIFICATION CODE field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["OUTLET CLASSIFICATION 2"]?.ToString()))
+                {
+                    showToast("OUTLET CLASSIFICATION 2 field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["OUTLET CLASSIFICATION 3"]?.ToString()))
+                {
+                    showToast("OUTLET CLASSIFICATION 3 field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["TAXTYPE"]?.ToString()))
+                {
+                    showToast("TAXTYPE field should not be empty", "toast-danger");
+                    return;
+                }
+
+                //if (string.IsNullOrWhiteSpace(row["RETAILER GSTTIN"]?.ToString()))
+                //{
+                //    showToast("RETAILER GSTTIN field should not be empty", "toast-danger");
+                //    return;
+                //}
+
+                if (string.IsNullOrWhiteSpace(row["ROUTE NAME"]?.ToString()))
+                {
+                    showToast("ROUTE NAME field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["SSM CODE"]?.ToString()))
+                {
+                    showToast("SSM CODE field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["SSM NAME"]?.ToString()))
+                {
+                    showToast("SSM NAME field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["COMPANYCODE"]?.ToString()))
+                {
+                    showToast("COMPANYCODE field should not be empty", "toast-danger");
+                    return;
+                }
+
+                //if (string.IsNullOrWhiteSpace(row["LOCALUPCOUNTRY"]?.ToString()))
+                //{
+                //    showToast("LOCALUPCOUNTRY field should not be empty", "toast-danger");
+                //    return;
+                //}
+
+                if (string.IsNullOrWhiteSpace(row["FREQUENCY"]?.ToString()))
+                {
+                    showToast("FREQUENCY field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["VANNONVAN"]?.ToString()))
+                {
+                    showToast("VANNONVAN field should not be empty", "toast-danger");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(row["ExistingData"]?.ToString()) || row["ExistingData"].ToString() == "Not Exists")
+                {
+                    string Classification1 = row["OUTLET CLASSIFICATION 1"].ToString();
+
+                    showToast("Classification 1 : " + Classification1 + " contains invalid data please correct it and try again", "toast-danger");
                     return;
                 }
             }
@@ -494,32 +605,43 @@ namespace Route
                 {
                     row["OUTLET CLASSIFICATION 1"] = row["ExistingData"]; // Replace with ExistingData
 
-                    using (SqlCommand cmd = new SqlCommand("SP_Route_NewGeo", con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
-                        cmd.Parameters.AddWithValue("@ActionType", "Submit_Click");
-                        cmd.Parameters.AddWithValue("@DistCode", DistCodeTxt.Text);
-                        cmd.Parameters.AddWithValue("@RouteCode", row["ROUTE CODE"].ToString());
-                        cmd.Parameters.AddWithValue("@RtrCode", row["RETAILER CODE"].ToString());
-                        cmd.Parameters.AddWithValue("@RtrNm", row["RETAILER NAME"].ToString());
-                        cmd.Parameters.AddWithValue("@Cls1Desc", row["OUTLET CLASSIFICATION 1"].ToString());
-                        cmd.Parameters.AddWithValue("@Cls2Desc", row["OUTLET CLASSIFICATION 2"].ToString());
-                        cmd.Parameters.AddWithValue("@Cls3Desc", row["OUTLET CLASSIFICATION 3"].ToString());
-                        cmd.Parameters.AddWithValue("@RtrAdd1", row["RETAILER ADD1"].ToString());
-                        cmd.Parameters.AddWithValue("@RtrAdd2", row["RETAILER ADD2"].ToString());
-                        cmd.Parameters.AddWithValue("@RtrAdd3", row["RETAILER ADD3"].ToString());
-                        cmd.Parameters.AddWithValue("@RtrPhone", row["PHONE OFF"].ToString());
-                        cmd.Parameters.AddWithValue("@RtrTaxType", row["TAXTYPE"].ToString());
-                        cmd.Parameters.AddWithValue("@RtrGSTNO", row["RETAILER GSTTIN"].ToString());
-                        cmd.Parameters.AddWithValue("@RouteName", row["ROUTE NAME"].ToString());
-                        cmd.Parameters.AddWithValue("@MnfCode", row["COMPANYCODE"].ToString());
-                        cmd.Parameters.AddWithValue("@RtType", row["VANNONVAN"].ToString());
-                        cmd.Parameters.AddWithValue("@RtCoverage", row["FREQUENCY"].ToString());
+                    //using (SqlCommand cmd = new SqlCommand("SP_Route_NewGeo", con))
+                    //{
+                    //    cmd.CommandType = CommandType.StoredProcedure;
+                    //    cmd.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                    //    cmd.Parameters.AddWithValue("@ActionType", "Submit_Click");
+                    //    cmd.Parameters.AddWithValue("@DistCode", DistCodeTxt.Text);
+                    //    cmd.Parameters.AddWithValue("@RouteCode", row["MARKET CODE"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RtrCode", row["RETAILERCODE"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RtrNm", row["RETAILER NAME"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@Cls1Desc", row["OUTLET CLASSIFICATION 1"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@Cls2Desc", row["OUTLET CLASSIFICATION 2"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@Cls3Desc", row["OUTLET CLASSIFICATION 3"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RtrAdd1", row["RETAILER ADD1"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RtrAdd2", row["RETAILER ADD2"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RtrAdd3", row["RETAILER ADD3"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RtrPhone", row["PHONEOFF"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RtrTaxType", row["TAXTYPE"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RtrGSTNO", row["RETAILER GSTTIN"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RouteName", row["ROUTE NAME"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@MnfCode", row["COMPANYCODE"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RtType", row["VANNONVAN"].ToString());//
+                    //    cmd.Parameters.AddWithValue("@RtCoverage", row["FREQUENCY"].ToString());//
 
-                        cmd.ExecuteNonQuery();
-                    }
+                    //    cmd.ExecuteNonQuery();
+                    //}
                 }
+
+                using (SqlCommand cmd = new SqlCommand("SP_Route_NewGeo_NewLogic", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                    cmd.Parameters.AddWithValue("@DistCode", DistCodeTxt.Text);
+                    cmd.Parameters.AddWithValue("@NewGeoetails", dtExcel);
+                    cmd.CommandTimeout = 600000;
+                    cmd.ExecuteNonQuery();
+                }
+
                 showToast("Data processed successfully!", "toast-success");
 
                 ClearForm();
