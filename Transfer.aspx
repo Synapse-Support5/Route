@@ -75,6 +75,60 @@
             max-height: 300px;
             max-width: 100%;
             overflow: auto;
+            position: relative;
+        }
+
+        /*body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f7fb;
+        }*/
+
+        /* Container for the progress bar */
+        .progress-bar-container {
+            width: 100%; /* Makes the container take up the full width */
+            /*max-width: 600px;*/ /* Optional: sets a maximum width for larger screens */
+            background-color: #e0e0e0;
+            border-radius: 0px;
+            overflow: hidden;
+            position: relative;
+            margin-top: -20px; /* Adjusts spacing from the <hr /> */
+            margin-bottom: 20px; /* Optional: adds some space after the progress bar */
+        }
+
+        /* The animated progress bar */
+        .progress-bar {
+            height: 5px;
+            background: linear-gradient(to right, #4caf50, #81c784, #4caf50); /* Green gradient */
+            width: 0%; /* Starts from 0% width */
+            animation: progress-animation 2s infinite; /* Animation for progress effect */
+        }
+
+        /* Keyframes for progress animation */
+        @keyframes progress-animation {
+            0% {
+                width: 0%;
+            }
+
+            50% {
+                width: 50%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* Adjustments for small screens */
+        @media (max-width: 768px) {
+            .progress-bar-container {
+                width: 100%; /* Full width on smaller screens */
+                max-width: 100%; /* Ensures the progress bar can stretch to the screen size */
+            }
         }
     </style>
 
@@ -168,25 +222,32 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Home">Home</a>
+                            <a class="nav-link" runat="server" href="~/Home" onclick="showLoading()">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Create">Create</a>
+                            <a class="nav-link" runat="server" href="~/Create" onclick="showLoading()">Create</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Map">Map</a>
+                            <a class="nav-link" runat="server" href="~/Map" onclick="showLoading()">Map</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Transfer">Transfer</a>
+                            <a class="nav-link" runat="server" href="~/Transfer" onclick="showLoading()">Transfer</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/NewGeo">NewGeo</a>
+                            <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
         <hr />
+
+        <%--progress bar--%>
+        <div id="loadingOverlay" style="display: none; z-index: 9999;">
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
 
         <div class="container body-content">
             <div class="headtag">
@@ -204,43 +265,32 @@
             </h2>
             <br />
 
-            <%--  <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:Button ID="RouteTransferBtn" runat="server" Text="Route Transfer" CssClass="btn btn-outline-info form-control" OnClick="RouteTransferBtn_Click" />
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:Button ID="RetTransferBtn" runat="server" Text="Retailer Transfer" CssClass="btn btn-outline-info form-control" OnClick="RetTransferBtn_Click" />
-                    </div>
-                </div>
-            </div>--%>
-
             <div id="routeTransferDiv" runat="server" class="container mt-3">
                 <div class="row mb-3">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="StateDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="StateDrp_SelectedIndexChanged">
+                        <asp:DropDownList ID="StateDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="StateDrp_SelectedIndexChanged">
                             <asp:ListItem Text="State" Value=""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="AreaDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="AreaDrp_SelectedIndexChanged">
+                        <asp:DropDownList ID="AreaDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="AreaDrp_SelectedIndexChanged">
                             <asp:ListItem Text="Area" Value=""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="ZoneDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="ZoneDrp_SelectedIndexChanged">
+                        <asp:DropDownList ID="ZoneDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="ZoneDrp_SelectedIndexChanged">
                             <asp:ListItem Text="Zone" Value=""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="FromDistDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="FromDistDrp_SelectedIndexChanged">
+                        <asp:DropDownList ID="FromDistDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="FromDistDrp_SelectedIndexChanged">
                             <asp:ListItem Text="From Distributor" Value=""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="TypeDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="TypeDrp_SelectedIndexChanged">
+                        <asp:DropDownList ID="TypeDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="TypeDrp_SelectedIndexChanged">
                             <asp:ListItem Text="Transfer Type" Value=""></asp:ListItem>
                             <asp:ListItem Text="Existing" Value="Existing"></asp:ListItem>
                             <asp:ListItem Text="Split" Value="Split"></asp:ListItem>
@@ -249,34 +299,28 @@
 
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
                         <asp:TextBox ID="TypeDrpSelected" runat="server" CssClass="form-control" placeholder="Existing" ReadOnly="true" Visible="false"></asp:TextBox>
-                        <button type="button" class="form-control" id="btnOpenModal" runat="server" data-toggle="modal" data-target="#exampleModalCenter" visible="false">
+                        <button type="button" class="form-control" id="btnOpenModal" runat="server" data-toggle="modal" data-target="#exampleModalCenter" visible="false" onclick="handleSplitButtonClick()">
                             Split
                         </button>
                     </div>
 
-                    <%--<div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <button type="button" class="form-control" id="btnOpenModal" data-toggle="modal" data-target="#exampleModalCenter">
-                            Split
-                        </button>
-                    </div>--%>
-
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="ToDistDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="RouteTransToDistDrp_SelectedIndexChanged">
+                        <asp:DropDownList ID="ToDistDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="RouteTransToDistDrp_SelectedIndexChanged">
                             <asp:ListItem Text="To Distributor" Value=""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div id="btnDivSingle" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="true">
                         <asp:Button ID="RouteTransferSubmit" runat="server" Text="Transfer" CssClass="btn btn-success form-control"
-                            OnClick="RouteTransferSubmit_Click" />
+                            OnClientClick="showLoading()" OnClick="RouteTransferSubmit_Click" />
                     </div>
 
                     <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
                         <div style="display: flex;">
                             <asp:Button ID="View" runat="server" Text="View" CssClass="btn btn-info form-control" Style="border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; width: 30%; margin-right: 5px;"
-                                OnClick="View_Click" />
+                                OnClientClick="showLoading()" OnClick="View_Click" />
                             <asp:Button ID="RouteTransferSubmitH" runat="server" Text="Transfer" CssClass="btn btn-success form-control"
                                 Style="border-top-left-radius: 0; border-bottom-left-radius: 0; width: 70%;"
-                                OnClick="RouteTransferSubmit_Click" />
+                                OnClientClick="showLoading()" OnClick="RouteTransferSubmit_Click" />
                         </div>
                     </div>
                 </div>
@@ -365,8 +409,7 @@
                         </HeaderTemplate>--%>
                                     <ItemTemplate>
                                         <div style="margin-right: 10px;">
-                                            <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox2" style="margin-left: -3px;"
-                                                onclick="handleCheckboxClick2(this)" />
+                                            <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox2" style="margin-left: -3px;" />
                                         </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
@@ -433,17 +476,25 @@
                                 <HeaderStyle CssClass="header-hidden" />
                                 <RowStyle CssClass="fixed-height-row" BackColor="#FFFFFF" />
                             </asp:GridView>
-                            <br /><br />
-                            <h5 style="color:red">Retailers are already active in <asp:Label ID="DBR" runat="server"></asp:Label> DBR. Are you sure want to Proceed?</h5><br />
-                            <h5 style="color:red">Note : </h5><p>If you proceed, the mentioned retailers will be set to Inactive for DBR <asp:Label ID="DBR2" runat="server"></asp:Label>.</p>
+                            <br />
+                            <br />
+                            <h5 style="color: red">Retailers are already active in
+                                <asp:Label ID="DBR" runat="server"></asp:Label>
+                                DBR. Are you sure want to Proceed?</h5>
+                            <br />
+                            <h5 style="color: red">Note : </h5>
+                            <p>
+                                If you proceed, the mentioned retailers will be set to Inactive for DBR
+                                <asp:Label ID="DBR2" runat="server"></asp:Label>.
+                            </p>
                         </div>
                     </div>
 
                     <div class="modal-footer">
                         <asp:Button ID="ProceedBtn" runat="server" Text="Proceed" CssClass="btn btn-success"
-                            OnClick="ProceedBtn_Click" />
+                            OnClientClick="showLoading()" OnClick="ProceedBtn_Click" />
                         <asp:Button ID="CancelBtn" runat="server" Text="Cancel" CssClass="btn btn-danger"
-                            OnClick="CancelBtn_Click" />
+                            OnClientClick="showLoading()" OnClick="CancelBtn_Click" />
                     </div>
                 </div>
             </div>
@@ -485,7 +536,7 @@
                     <div class="modal-footer">
                         <%--<button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>--%>
                         <asp:Button ID="SelectBtn" runat="server" Text="Select" CssClass="btn btn-primary"
-                            OnClick="SelectBtn_Click" />
+                            OnClientClick="showLoading()" OnClick="SelectBtn_Click" />
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -499,17 +550,17 @@
     </form>
 
     <%-- Script for selectall checkboxes in RouteTransferSplitGridview --%>
-    <script type="text/javascript">
+    <%--<script type="text/javascript">
         function selectAllCheckboxes(source) {
             var checkboxes = document.querySelectorAll('.rowCheckbox');
             for (var i = 0; i < checkboxes.length; i++) {
                 checkboxes[i].checked = source.checked;
             }
         }
-    </script>
+    </script>--%>
 
     <%--script for SplitGridView Checkboxes to remain any one checkbox--%>
-    <script type="text/javascript">
+    <%--<script type="text/javascript">
         // Function to handle checkbox click
         function handleCheckboxClick(checkbox) {
             // Get all checkboxes
@@ -542,13 +593,70 @@
                 }
             });
         }
-    </script>
+    </script>--%>
 
+    <script type="text/javascript">
+        // This function is triggered when the Split button is clicked
+        function handleSplitButtonClick() {
+            setCheckboxState(); // Check if checkboxes need to be disabled when Modal opens
+        }
+
+        // Function to handle checkbox click
+        function handleCheckboxClick(checkbox) {
+            // Get all checkboxes
+            const checkboxes = document.querySelectorAll('.rowCheckbox');
+
+            // Count checked checkboxes
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+            // Apply the logic to ensure at least one checkbox remains unchecked
+            checkboxes.forEach(cb => {
+                if (!cb.checked && checkedCount === checkboxes.length - 1) {
+                    cb.disabled = true; // Disable the last unchecked checkbox
+
+                    // Show toast notification
+                    showToast("At least one Route will remain in Split case", "toast-warning");
+
+                } else {
+                    cb.disabled = false; // Enable others
+                }
+            });
+        }
+
+        // This function is triggered when the page or modal is loaded to ensure proper checkbox states
+        function setCheckboxState() {
+            const checkboxes = document.querySelectorAll('.rowCheckbox');
+
+            if (checkboxes.length === 1) {
+                // Disable the checkbox if there's only one checkbox in the modal
+                checkboxes[0].disabled = true;
+            } else {
+                // Enable all checkboxes if there are multiple checkboxes
+                checkboxes.forEach(cb => cb.disabled = false);
+            }
+        }
+
+        // Ensure proper checkbox state on modal open
+        window.onload = function () {
+            setCheckboxState();
+        }
+</script>
 
     <script>
         function showModal() {
             $('#alertModal').modal('show');
         }
+    </script>
+
+    <%--scri[pt for progressbar--%>
+    <script>
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'block';
+        }
+
+        window.onload = function () {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        };
     </script>
 
 </body>

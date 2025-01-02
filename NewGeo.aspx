@@ -128,6 +128,48 @@
             background-color: transparent; /* Keep the background transparent */
         }
 
+        /* Container for the progress bar */
+        .progress-bar-container {
+            width: 100%; /* Makes the container take up the full width */
+            /*max-width: 600px;*/ /* Optional: sets a maximum width for larger screens */
+            background-color: #e0e0e0;
+            border-radius: 0px;
+            overflow: hidden;
+            position: relative;
+            margin-top: -20px; /* Adjusts spacing from the <hr /> */
+            margin-bottom: 20px; /* Optional: adds some space after the progress bar */
+        }
+
+        /* The animated progress bar */
+        .progress-bar {
+            height: 5px;
+            background: linear-gradient(to right, #4caf50, #81c784, #4caf50); /* Green gradient */
+            width: 0%; /* Starts from 0% width */
+            animation: progress-animation 2s infinite; /* Animation for progress effect */
+        }
+
+        /* Keyframes for progress animation */
+        @keyframes progress-animation {
+            0% {
+                width: 0%;
+            }
+
+            50% {
+                width: 50%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* Adjustments for small screens */
+        @media (max-width: 768px) {
+            .progress-bar-container {
+                width: 100%; /* Full width on smaller screens */
+                max-width: 100%; /* Ensures the progress bar can stretch to the screen size */
+            }
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -168,14 +210,14 @@
             $('#noteAlert').hide();
         }
 
-        function showLoader() {
-            document.getElementById('spinner').style.display = 'block';
-        }
+        //function showLoader() {
+        //    document.getElementById('spinner').style.display = 'block';
+        //}
 
-        // Function to hide loader
-        function hideLoader() {
-            document.getElementById('spinner').style.display = 'none';
-        }
+        //// Function to hide loader
+        //function hideLoader() {
+        //    document.getElementById('spinner').style.display = 'none';
+        //}
 
     </script>
 </head>
@@ -191,19 +233,19 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                            <a id="HomeLink" class="nav-link" runat="server" href="~/Home">Home</a>
+                            <a id="HomeLink" class="nav-link" runat="server" href="~/Home" onclick="showLoading()">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a id="CreateLink" class="nav-link" runat="server" href="~/Create">Create</a>
+                            <a id="CreateLink" class="nav-link" runat="server" href="~/Create" onclick="showLoading()">Create</a>
                         </li>
                         <li class="nav-item">
-                            <a id="ModifyLink" class="nav-link" runat="server" href="~/Map">Map</a>
+                            <a id="ModifyLink" class="nav-link" runat="server" href="~/Map" onclick="showLoading()">Map</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Transfer">Transfer</a>
+                            <a class="nav-link" runat="server" href="~/Transfer" onclick="showLoading()">Transfer</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/NewGeo">NewGeo</a>
+                            <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
                         </li>
                     </ul>
                 </div>
@@ -211,6 +253,12 @@
         </nav>
 
         <hr />
+        <%--progress bar--%>
+        <div id="loadingOverlay" style="display: none; z-index: 9999;">
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
 
         <div class="container body-content">
             <div class="headtag">
@@ -233,7 +281,7 @@
                     </div>
                     <div id="btnDivSingle" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="true">
                         <asp:Button ID="EnterSubmit" runat="server" Text="Enter" CssClass="btn btn-primary form-control"
-                            OnClick="BtnEnter_Click" />
+                            OnClientClick="showLoading()" OnClick="BtnEnter_Click" />
                     </div>
                     <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
                         <div class="file-upload-container position-relative">
@@ -243,11 +291,11 @@
                         </div>
                     </div>
                     <div id="btnDivSplit2" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
-                        <asp:Button ID="SubmitBtn" runat="server" Text="Submit" CssClass="btn btn-info form-control" OnClick="Submit_Click" />
+                        <asp:Button ID="SubmitBtn" runat="server" Text="Submit" CssClass="btn btn-info form-control" OnClientClick="showLoading()" OnClick="Submit_Click" />
                     </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                    <%--<div class="col-12 col-md-3 mb-2 mb-md-0">
                         <div id="spinner" class="spinner"></div>
-                    </div>
+                    </div>--%>
                 </div>
             </div>
 
@@ -265,7 +313,7 @@
                         <p class="mb-0">
                             Some of the 'OUTLET CLASSIFICATION 1' will be replaced with the marked 'ExistingData'. 
                             Click 
-                            <asp:Button ID="btnContinue" runat="server" Text="Continue" CssClass="btn btn-success form-control" Width="100px" OnClick="btnContinue_Click" />
+                            <asp:Button ID="btnContinue" runat="server" Text="Continue" CssClass="btn btn-success form-control" Width="100px" OnClientClick="showLoading()" OnClick="btnContinue_Click" />
                             to proceed.
                         </p>
                     </div>
@@ -279,7 +327,7 @@
                         <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
                             Style="margin-bottom: 0px; text-align: center;" OnRowDataBound="GridView1_RowDataBound">
                             <Columns>
-                                <asp:BoundField DataField="RETAILER CODE" HeaderText="RETAILER CODE" />
+                                <asp:BoundField DataField="RETAILERCODE" HeaderText="RETAILER CODE" />
                                 <asp:BoundField DataField="RETAILER NAME" HeaderText="RETAILER NAME" />
                                 <asp:BoundField DataField="ROUTE CODE" HeaderText="ROUTE CODE" />
                                 <asp:BoundField DataField="ROUTE NAME" HeaderText="ROUTE NAME" />
@@ -289,6 +337,16 @@
                                 <asp:BoundField DataField="ExistingData" HeaderText="ExistingData" />
 
                                 <asp:BoundField DataField="MatchStatus" HeaderText="MatchStatus" Visible="false" />
+                                <asp:BoundField DataField="RETAILER ADD1" HeaderText="MatchStatus" Visible="false" />
+                                <asp:BoundField DataField="RETAILER ADD2" HeaderText="MatchStatus" Visible="false" />
+                                <asp:BoundField DataField="RETAILER ADD3" HeaderText="MatchStatus" Visible="false" />
+                                <asp:BoundField DataField="PHONEOFF" HeaderText="MatchStatus" Visible="false" />
+                                <asp:BoundField DataField="TAXTYPE" HeaderText="MatchStatus" Visible="false" />
+                                <asp:BoundField DataField="RETAILER GSTTIN" HeaderText="MatchStatus" Visible="false" />
+                                <asp:BoundField DataField="COMPANYCODE" HeaderText="MatchStatus" Visible="false" />
+                                <asp:BoundField DataField="VANNONVAN" HeaderText="MatchStatus" Visible="false" />
+                                <asp:BoundField DataField="FREQUENCY" HeaderText="MatchStatus" Visible="false" />
+                                <asp:BoundField DataField="MARKET CODE" HeaderText="MatchStatus" Visible="false" />
 
                             </Columns>
                         </asp:GridView>
@@ -308,7 +366,7 @@
     </form>
 
     <%-- Script for Loading --%>
-    <script>
+    <%--<script>
         $('#<%= SubmitBtn.ClientID %>').click(function () {
             showLoader();
         });
@@ -316,6 +374,17 @@
         $('#<%= btnContinue.ClientID %>').click(function () {
             showLoader();
         });
+    </script>--%>
+
+    <%--scri[pt for progressbar--%>
+    <script>
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'block';
+        }
+
+        window.onload = function () {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        };
     </script>
 
 </body>

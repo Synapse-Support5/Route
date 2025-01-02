@@ -74,6 +74,49 @@
             max-width: 100%;
             overflow: auto;
         }
+
+        /* Container for the progress bar */
+        .progress-bar-container {
+            width: 100%; /* Makes the container take up the full width */
+            /*max-width: 600px;*/ /* Optional: sets a maximum width for larger screens */
+            background-color: #e0e0e0;
+            border-radius: 0px;
+            overflow: hidden;
+            position: relative;
+            margin-top: -20px; /* Adjusts spacing from the <hr /> */
+            margin-bottom: 20px; /* Optional: adds some space after the progress bar */
+        }
+
+        /* The animated progress bar */
+        .progress-bar {
+            height: 5px;
+            background: linear-gradient(to right, #4caf50, #81c784, #4caf50); /* Green gradient */
+            width: 0%; /* Starts from 0% width */
+            animation: progress-animation 2s infinite; /* Animation for progress effect */
+        }
+
+        /* Keyframes for progress animation */
+        @keyframes progress-animation {
+            0% {
+                width: 0%;
+            }
+
+            50% {
+                width: 50%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* Adjustments for small screens */
+        @media (max-width: 768px) {
+            .progress-bar-container {
+                width: 100%; /* Full width on smaller screens */
+                max-width: 100%; /* Ensures the progress bar can stretch to the screen size */
+            }
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -136,25 +179,32 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Home">Home</a>
+                            <a class="nav-link" runat="server" href="~/Home" onclick="showLoading()">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Create">Create</a>
+                            <a class="nav-link" runat="server" href="~/Create" onclick="showLoading()">Create</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Map">Map</a>
+                            <a class="nav-link" runat="server" href="~/Map" onclick="showLoading()">Map</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Transfer">Transfer</a>
+                            <a class="nav-link" runat="server" href="~/Transfer" onclick="showLoading()">Transfer</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/NewGeo">NewGeo</a>
+                            <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
         <hr />
+
+        <%--progress bar--%>
+        <div id="loadingOverlay" style="display: none; z-index: 9999;">
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
 
         <div class="container body-content">
             <div class="headtag">
@@ -188,7 +238,7 @@
                         </button>
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:Button ID="Submit" runat="server" Text="Map" CssClass="btn btn-success form-control" OnClick="btnSubmit_Click" />
+                        <asp:Button ID="Submit" runat="server" Text="Map" CssClass="btn btn-success form-control" OnClientClick="showLoading()" OnClick="btnSubmit_Click" />
                     </div>
                 </div>
 
@@ -348,5 +398,15 @@
         });
     </script>
 
+    <%--scri[pt for progressbar--%>
+    <script>
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'block';
+        }
+
+        window.onload = function () {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        };
+    </script>
 </body>
 </html>

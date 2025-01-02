@@ -13,6 +13,7 @@ using System.Web.UI.HtmlControls;
 using System.Xml.Linq;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 using System.Reflection.Emit;
+using System.Web.DynamicData;
 
 namespace Route
 {
@@ -24,6 +25,9 @@ namespace Route
         public DataSet ds1 = new DataSet();
         bool anyCheckboxSelected = false;
         string Approval = string.Empty;
+        string existingUr = string.Empty;
+        string existingRtr = string.Empty;
+        int existing = 0;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -771,7 +775,7 @@ namespace Route
 
                             foreach (string routeCodee in checkedRoutes)
                             {
-                                SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
+                                SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer_Existing_NewLogic", con);
                                 cmd1.CommandType = CommandType.StoredProcedure;
                                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                                 cmd1.Parameters.AddWithValue("@ActionType", "RouteTransferBtnClick");
@@ -805,49 +809,43 @@ namespace Route
                 }
                 else if (TypeDrp.SelectedValue == "Split")
                 {
+                    DataTable dtforParam = new DataTable();
+                    dtforParam.Columns.Add("RouteCode", typeof(string));
+                    dtforParam.Columns.Add("UrCode", typeof(string));
+                    dtforParam.Columns.Add("RtrCode", typeof(string));
+
                     foreach (GridViewRow row in RouteTransSplitRetailerGrid.Rows)
                     {
                         HtmlInputCheckBox chkBox = (HtmlInputCheckBox)row.FindControl("CheckBox1");
                         if (chkBox != null && chkBox.Checked)
                         {
                             string routeCode = row.Cells[1].Text;
-                            checkedRoutes.Add(routeCode);
-
                             string urCode = row.Cells[4].Text;
-
                             string rtrCode = row.Cells[3].Text;
 
-                            anyCheckboxSelected = true;
+                            dtforParam.Rows.Add(routeCode, urCode, rtrCode);
 
+                        }
+                    }
 
-                            foreach (string routeCodes in checkedRoutes)
+                    SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer_SplitCase_NewLogic", con);
+                    cmd1.CommandType = CommandType.StoredProcedure;
+                    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                    cmd1.Parameters.AddWithValue("@DistCode", FromDistDrp.SelectedValue);
+                    cmd1.Parameters.AddWithValue("@ToDistCode", ToDistDrp.SelectedValue);
+                    cmd1.Parameters.AddWithValue("@DTRetailerRouteDetails", dtforParam);
+
+                    cmd1.CommandTimeout = 60000;
+
+                    using (SqlDataReader reader = cmd1.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            // Collect each response message in the list
+                            string message = reader[0].ToString();
+                            if (!string.IsNullOrEmpty(message))
                             {
-                                string checkedurcs = checkedRoutes.ToString();
-
-                                SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer_SplitCase", con);
-                                cmd1.CommandType = CommandType.StoredProcedure;
-                                cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
-                                cmd1.Parameters.AddWithValue("@DistCode", FromDistDrp.SelectedValue);
-                                cmd1.Parameters.AddWithValue("@ToDistCode", ToDistDrp.SelectedValue);
-                                cmd1.Parameters.AddWithValue("@RouteCode", routeCodes);
-                                cmd1.Parameters.AddWithValue("@UrCode", urCode);
-                                cmd1.Parameters.AddWithValue("@RtrCode", rtrCode);
-
-                                cmd1.CommandTimeout = 60000;
-
-                                using (SqlDataReader reader = cmd1.ExecuteReader())
-                                {
-                                    while (reader.Read())
-                                    {
-                                        // Collect each response message in the list
-                                        string message = reader[0].ToString();
-                                        if (!string.IsNullOrEmpty(message))
-                                        {
-                                            messages.Add(message);
-                                        }
-                                    }
-                                }
-
+                                messages.Add(message);
                             }
                         }
                     }
@@ -1189,6 +1187,11 @@ namespace Route
         {
             List<string> checkedRoutes = new List<string>();
 
+            DataTable dtforParam = new DataTable();
+            dtforParam.Columns.Add("RouteCode", typeof(string));
+            dtforParam.Columns.Add("UrCode", typeof(string));
+            dtforParam.Columns.Add("RtrCode", typeof(string));
+
             try
             {
 
@@ -1200,8 +1203,17 @@ namespace Route
                         if (chkBox != null && chkBox.Checked)
                         {
                             string routeCode = row.Cells[1].Text;
-                            checkedRoutes.Add(routeCode);
+                            //checkedRoutes.Add(routeCode);
+
+                            existingUr = "";
+                            existingRtr = "";
+
+                            dtforParam.Rows.Add(routeCode, existingUr, existingRtr);
+
                             //anyCheckboxSelected = true;
+                            existing = 1;
+
+                            //SP_Route_Transfer_RetailerExistingAnotherDBR(routeCode, existing);
                         }
                     }
                 }
@@ -1213,15 +1225,36 @@ namespace Route
                         if (chkBox != null && chkBox.Checked)
                         {
                             string routeCode = row.Cells[1].Text;
-                            checkedRoutes.Add(routeCode);
+                            //checkedRoutes.Add(routeCode);
+
+                            existingUr = row.Cells[4].Text;
+                            existingRtr = row.Cells[3].Text;
+
+                            dtforParam.Rows.Add(routeCode, existingUr, existingRtr);
 
                             //anyCheckboxSelected = true;
+                            existing = 0;
+
+                            
                         }
                     }
                 }
 
-                string routecode = string.Join(",", checkedRoutes);
+                //string routecode = string.Join(",", checkedRoutes);
 
+                SP_Route_Transfer_RetailerExistingAnotherDBR(dtforParam);
+
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+
+        public void SP_Route_Transfer_RetailerExistingAnotherDBR(DataTable dtforParam)
+        {
+            try
+            {
                 if (con.State == ConnectionState.Closed)
                 {
                     con.Open();
@@ -1232,10 +1265,9 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@ActionType", "RetailerExistingAnotherDBR");
                 cmd1.Parameters.AddWithValue("@FromDistCode", FromDistDrp.SelectedValue);
                 cmd1.Parameters.AddWithValue("@ToDistCode", "");
-                cmd1.Parameters.AddWithValue("@RouteCode", routecode);
+                cmd1.Parameters.AddWithValue("@RouteDetails", dtforParam);
                 cmd1.Parameters.AddWithValue("@Distid", "");
-                cmd1.Parameters.AddWithValue("@DupUrcode", "");
-                cmd1.Parameters.AddWithValue("@DupRtrcode", "");
+                cmd1.Parameters.AddWithValue("@Existing", existing);
 
                 cmd1.ExecuteNonQuery();
 
@@ -1253,8 +1285,8 @@ namespace Route
 
                     DBR.Text = FromDistDrp.SelectedValue;
                     DBR2.Text = FromDistDrp.SelectedValue;
-                    RouteTransSplitRetailerGrid.DataSource = null;
-                    RouteTransSplitRetailerGrid.DataBind();
+                    //RouteTransSplitRetailerGrid.DataSource = null;
+                    //RouteTransSplitRetailerGrid.DataBind();
                 }
                 else
                 {
@@ -1264,7 +1296,6 @@ namespace Route
                 }
 
                 con.Close();
-
             }
             catch (Exception ex)
             {
@@ -1276,6 +1307,11 @@ namespace Route
         {
             try
             {
+                DataTable dtforParam1 = new DataTable();
+                dtforParam1.Columns.Add("RouteCode", typeof(string));
+                dtforParam1.Columns.Add("UrCode", typeof(string));
+                dtforParam1.Columns.Add("RtrCode", typeof(string));
+
                 if (con.State == ConnectionState.Closed)
                 {
                     con.Open();
@@ -1286,6 +1322,7 @@ namespace Route
                     string rtrCode = row.Cells[2].Text;
                     string urCode = row.Cells[4].Text;
                     string distId = row.Cells[5].Text;
+                    dtforParam1.Rows.Add("", urCode, rtrCode);
 
                     SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer_RetailerExistingAnotherDBR", con);
                     cmd1.CommandType = CommandType.StoredProcedure;
@@ -1293,12 +1330,13 @@ namespace Route
                     cmd1.Parameters.AddWithValue("@ActionType", "InActiveRetailerExistingAnotherDBR");
                     cmd1.Parameters.AddWithValue("@FromDistCode", "");
                     cmd1.Parameters.AddWithValue("@ToDistCode", "");
-                    cmd1.Parameters.AddWithValue("@RouteCode", "");
+                    cmd1.Parameters.AddWithValue("@RouteDetails", dtforParam1);
                     cmd1.Parameters.AddWithValue("@Distid", distId);
-                    cmd1.Parameters.AddWithValue("@DupUrcode", urCode);
-                    cmd1.Parameters.AddWithValue("@DupRtrcode", rtrCode);
+                    cmd1.Parameters.AddWithValue("@Existing", 0);
 
                     cmd1.ExecuteNonQuery();
+                    dtforParam1.Rows.Clear();
+                    dtforParam1.AcceptChanges();
                 }
 
                 con.Close();
@@ -1352,9 +1390,12 @@ namespace Route
 
         protected void ProceedBtn_Click(object sender, EventArgs e)
         {
-            ProceedTransfer();
             InActiveRetailerExistingAnotherDBR();
+            ProceedTransfer();
             RetailerExceptionLog();
+
+            RouteTransSplitRetailerGrid.DataSource = null;
+            RouteTransSplitRetailerGrid.DataBind();
         }
 
         protected void CancelBtn_Click(object sender, EventArgs e)
