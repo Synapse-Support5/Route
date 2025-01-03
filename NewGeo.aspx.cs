@@ -280,6 +280,7 @@ namespace Route
                     // Check if the sheets exist
                     ExcelWorksheet retailerSheet = package.Workbook.Worksheets["Retailer"];
                     ExcelWorksheet routeSheet = package.Workbook.Worksheets["Route"];
+                    ExcelWorksheet distributorInfoSheet = package.Workbook.Worksheets["Distributor Info"];
                     //ExcelWorksheet restrictedSheet = package.Workbook.Worksheets["Restricted"];
 
                     var sheet = package.Workbook.Worksheets["Restricted"];
@@ -291,6 +292,28 @@ namespace Route
                         {
                             showToast("You cannot upload the sample file", "toast-danger");
                             return null;
+                        }
+                    }
+
+                    // Check if Distributor Info sheet exists
+                    string distributorSAPCode = string.Empty;
+                    if (distributorInfoSheet != null)
+                    {
+                        // Find the cell containing "Distributor SAP Code"
+                        for (int row = 1; row <= distributorInfoSheet.Dimension.End.Row; row++)
+                        {
+                            for (int col = 1; col <= distributorInfoSheet.Dimension.End.Column; col++)
+                            {
+                                if (distributorInfoSheet.Cells[row, col].Text == "Distributor SAP Code")
+                                {
+                                    // Get the Distcode from the adjacent cell
+                                    distributorSAPCode = distributorInfoSheet.Cells[row, col + 2].Text;
+                                    break;
+                                }
+                            }
+
+                            if (!string.IsNullOrEmpty(distributorSAPCode))
+                                break;
                         }
                     }
 
@@ -343,7 +366,8 @@ namespace Route
                     dt.Columns.Add("COMPANYCODE", typeof(string));
                     dt.Columns.Add("LOCALUPCOUNTRY", typeof(string));
                     dt.Columns.Add("FREQUENCY", typeof(string)); 
-                    dt.Columns.Add("VANNONVAN", typeof(string)); 
+                    dt.Columns.Add("VANNONVAN", typeof(string));
+                    dt.Columns.Add("Distributor SAP Code", typeof(string));
 
                     // Validate if the sheets have data after the header
                     if (retailerSheet.Dimension.Rows < 2 && routeSheet.Dimension.Rows < 2)
@@ -388,6 +412,8 @@ namespace Route
                         newRow["LOCALUPCOUNTRY"] = matchingRouteRow?["LOCALUPCOUNTRY"] ?? DBNull.Value;
                         newRow["FREQUENCY"] = matchingRouteRow?["FREQUENCY"] ?? DBNull.Value;
                         newRow["VANNONVAN"] = matchingRouteRow?["VANNONVAN"] ?? DBNull.Value;
+
+                        newRow["Distributor SAP Code"] = distributorSAPCode;
 
                         dt.Rows.Add(newRow);
                     }
@@ -460,6 +486,7 @@ namespace Route
 
             return table;
         }
+
         #endregion
 
         #region GridView1_RowDataBound
@@ -488,7 +515,15 @@ namespace Route
             {
                 showToast("No data available to process.", "toast-danger");
                 return;
-            }            
+            }
+
+            string distributorSapCodeFromExcel = dtExcel.Rows[0]["Distributor SAP Code"].ToString();
+
+            if (distributorSapCodeFromExcel != DistCodeTxt.Text)
+            {
+                showToast("The entered DistCode does not match the Distributor SAP Code from the uploaded Excel file", "toast-danger");
+                return;
+            }
 
             foreach (DataRow row in dtExcel.Rows)
             {
