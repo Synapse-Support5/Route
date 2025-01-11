@@ -354,6 +354,22 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-12">
+                    <div class="grid-wrapper">
+                        <asp:GridView ID="SSMExistGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                            Style="margin-bottom: 0px; text-align: center;">
+                            <Columns>
+                                <asp:BoundField DataField="SSM CODE" HeaderText="SSM CODE" />
+                                <asp:BoundField DataField="SSM NAME" HeaderText="SSM NAME" />
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </div>
+
+
+
 
             <%--<asp:Button ID="btnContinue" runat="server" Text="Continue" OnClick="btnContinue_Click" />--%>
 

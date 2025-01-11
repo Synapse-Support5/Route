@@ -117,6 +117,36 @@
                 max-width: 100%; /* Ensures the progress bar can stretch to the screen size */
             }
         }
+
+        /* Style the autocomplete dropdown to look like a DropDownList */
+        .ui-autocomplete {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1050;
+            width: 50px; /* Match the width of the input field */
+        }
+
+        .ui-menu-item {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+            .ui-menu-item:hover {
+                background-color: #007bff;
+                color: white;
+            }
+
+        /* Hide any default message shown by jQuery UI */
+        .ui-helper-hidden-accessible {
+            display: none;
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -124,6 +154,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
         function showToast(message, styleClass) {
             var toast = $('<div class="toast-custom ' + styleClass + '">' + message + '</div>').appendTo('#toastContainer');
@@ -208,9 +239,10 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="DistDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="DistDrp_SelectedIndexChanged">
-                            <asp:ListItem Text="DistCode" Value=""></asp:ListItem>
+                        <asp:DropDownList ID="DistDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="DistDrp_SelectedIndexChanged">
+                            <%--<asp:ListItem Text="DistCode" Value=""></asp:ListItem>--%>
                         </asp:DropDownList>
+                        <input type="text" id="DistSearch" class="form-control" placeholder="Search Distributor" />
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
                         <asp:TextBox ID="RtCode" runat="server" CssClass="form-control" placeholder="Route Code"
@@ -396,5 +428,39 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         };
     </script>
+
+    <%--Script for Dist Dropdown Auto Search--%> 
+    <script>
+        $(document).ready(function () {
+            // Get DropDownList options and convert to an array
+            var options = [];
+            $('#<%= DistDrp.ClientID %> option').each(function () {
+            var text = $(this).text();  // DistNm
+            var value = $(this).val();  // DistCode
+            if (value) {
+                options.push({ label: text, value: value });
+            }
+        });
+
+        // Initialize jQuery UI Autocomplete
+        $('#DistSearch').autocomplete({
+            source: options,
+            select: function (event, ui) {
+                // Set the selected value in the input box (DistNm)
+                $('#DistSearch').val(ui.item.label);
+
+                // Update the hidden DropDownList (DistDrp) value
+                $('#<%= DistDrp.ClientID %>').val(ui.item.value);
+
+                // Trigger OnSelectedIndexChanged event of DropDownList
+                __doPostBack('<%= DistDrp.UniqueID %>', '');
+
+                // Return true to avoid clearing the selected value
+                return true; // Ensures value remains in the input field
+            }
+        });
+    });
+    </script>
+
 </body>
 </html>

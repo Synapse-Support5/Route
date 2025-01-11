@@ -126,7 +126,9 @@
                     });
                 });
             }, 3000);
-        }</script>
+        }
+
+    </script>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -182,7 +184,6 @@
             </table>
             <br />
 
-
             <%-- Notification Label --%>
             <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;"></div>
             <asp:HiddenField ID="hdnBusinessType" runat="server" />
@@ -200,6 +201,7 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         };
     </script>
+
 </body>
 </html>
 

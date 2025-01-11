@@ -25,6 +25,9 @@ namespace Route
             if (!IsPostBack)
             {
                 AccessLoad();
+
+                SSMExistGrid.DataSource = null;
+                SSMExistGrid.DataBind();
             }
         }
 
@@ -271,7 +274,7 @@ namespace Route
         private DataTable GetDataFromExcel(Stream fileStream)
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-            DataTable dt = new DataTable(); 
+            DataTable dt = new DataTable();
 
             try
             {
@@ -315,6 +318,12 @@ namespace Route
                             if (!string.IsNullOrEmpty(distributorSAPCode))
                                 break;
                         }
+                    }
+
+                    if (distributorSAPCode != DistCodeTxt.Text)
+                    {
+                        showToast("The entered DistCode does not match the Distributor SAP Code from the uploaded Excel file", "toast-danger");
+                        return null;
                     }
 
                     if (retailerSheet == null || routeSheet == null)
@@ -361,13 +370,13 @@ namespace Route
                     dt.Columns.Add("ExistingData", typeof(string));
                     dt.Columns.Add("MatchStatus", typeof(int)); // 0 if same, 1 if different
                     dt.Columns.Add("ROUTE NAME", typeof(string)); // New column for ROUTENAME
-                    dt.Columns.Add("SSM CODE", typeof(string)); 
-                    dt.Columns.Add("SSM NAME", typeof(string)); 
+                    dt.Columns.Add("SSM CODE", typeof(string));
+                    dt.Columns.Add("SSM NAME", typeof(string));
                     dt.Columns.Add("COMPANYCODE", typeof(string));
                     dt.Columns.Add("LOCALUPCOUNTRY", typeof(string));
-                    dt.Columns.Add("FREQUENCY", typeof(string)); 
+                    dt.Columns.Add("FREQUENCY", typeof(string));
                     dt.Columns.Add("VANNONVAN", typeof(string));
-                    dt.Columns.Add("Distributor SAP Code", typeof(string));
+                    //dt.Columns.Add("Distributor SAP Code", typeof(string));
 
                     // Validate if the sheets have data after the header
                     if (retailerSheet.Dimension.Rows < 2 && routeSheet.Dimension.Rows < 2)
@@ -413,7 +422,7 @@ namespace Route
                         newRow["FREQUENCY"] = matchingRouteRow?["FREQUENCY"] ?? DBNull.Value;
                         newRow["VANNONVAN"] = matchingRouteRow?["VANNONVAN"] ?? DBNull.Value;
 
-                        newRow["Distributor SAP Code"] = distributorSAPCode;
+                        //newRow["Distributor SAP Code"] = distributorSAPCode;
 
                         dt.Rows.Add(newRow);
                     }
@@ -517,13 +526,13 @@ namespace Route
                 return;
             }
 
-            string distributorSapCodeFromExcel = dtExcel.Rows[0]["Distributor SAP Code"].ToString();
+            //string distributorSapCodeFromExcel = dtExcel.Rows[0]["Distributor SAP Code"].ToString();
 
-            if (distributorSapCodeFromExcel != DistCodeTxt.Text)
-            {
-                showToast("The entered DistCode does not match the Distributor SAP Code from the uploaded Excel file", "toast-danger");
-                return;
-            }
+            //if (distributorSapCodeFromExcel != DistCodeTxt.Text)
+            //{
+            //    showToast("The entered DistCode does not match the Distributor SAP Code from the uploaded Excel file", "toast-danger");
+            //    return;
+            //}
 
             foreach (DataRow row in dtExcel.Rows)
             {
@@ -636,48 +645,51 @@ namespace Route
             {
                 con.Open();
 
-                foreach (DataRow row in dtExcel.Rows)
-                {
-                    row["OUTLET CLASSIFICATION 1"] = row["ExistingData"]; // Replace with ExistingData
-
-                    //using (SqlCommand cmd = new SqlCommand("SP_Route_NewGeo", con))
-                    //{
-                    //    cmd.CommandType = CommandType.StoredProcedure;
-                    //    cmd.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
-                    //    cmd.Parameters.AddWithValue("@ActionType", "Submit_Click");
-                    //    cmd.Parameters.AddWithValue("@DistCode", DistCodeTxt.Text);
-                    //    cmd.Parameters.AddWithValue("@RouteCode", row["MARKET CODE"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RtrCode", row["RETAILERCODE"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RtrNm", row["RETAILER NAME"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@Cls1Desc", row["OUTLET CLASSIFICATION 1"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@Cls2Desc", row["OUTLET CLASSIFICATION 2"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@Cls3Desc", row["OUTLET CLASSIFICATION 3"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RtrAdd1", row["RETAILER ADD1"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RtrAdd2", row["RETAILER ADD2"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RtrAdd3", row["RETAILER ADD3"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RtrPhone", row["PHONEOFF"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RtrTaxType", row["TAXTYPE"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RtrGSTNO", row["RETAILER GSTTIN"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RouteName", row["ROUTE NAME"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@MnfCode", row["COMPANYCODE"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RtType", row["VANNONVAN"].ToString());//
-                    //    cmd.Parameters.AddWithValue("@RtCoverage", row["FREQUENCY"].ToString());//
-
-                    //    cmd.ExecuteNonQuery();
-                    //}
-                }
-
                 using (SqlCommand cmd = new SqlCommand("SP_Route_NewGeo_NewLogic", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                     cmd.Parameters.AddWithValue("@DistCode", DistCodeTxt.Text);
                     cmd.Parameters.AddWithValue("@NewGeoetails", dtExcel);
-                    cmd.CommandTimeout = 600000;
-                    cmd.ExecuteNonQuery();
+                    cmd.Parameters.AddWithValue("@ActionType", "SSMValidation");
+
+                    cmd.CommandTimeout = 6000;
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+                    DataTable dt20 = new DataTable();
+
+                    dt20.Clear();
+                    da.Fill(dt20);
+
+                    if (dt20.Rows.Count > 0)
+                    {
+                        SSMExistGrid.DataSource = dt20;
+                        SSMExistGrid.DataBind();
+
+                        showToast("Mentioned salesmen not tagged for DBR : " + DistCodeTxt.Text + " Please tag salesmen for further proceeding", "toast-danger");
+                    }
+                    else
+                    {
+                        foreach (DataRow row in dtExcel.Rows)
+                        {
+                            row["OUTLET CLASSIFICATION 1"] = row["ExistingData"]; // Replace with ExistingData
+                        }
+
+                        using (SqlCommand cmd1 = new SqlCommand("SP_Route_NewGeo_NewLogic", con))
+                        {
+                            cmd1.CommandType = CommandType.StoredProcedure;
+                            cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                            cmd1.Parameters.AddWithValue("@DistCode", DistCodeTxt.Text);
+                            cmd1.Parameters.AddWithValue("@NewGeoetails", dtExcel);
+                            cmd1.Parameters.AddWithValue("@ActionType", "NewGeoInsert");
+                            cmd1.CommandTimeout = 600000;
+                            cmd1.ExecuteNonQuery();
+                        }
+
+                        showToast("Data processed successfully!", "toast-success");
+                    }
                 }
 
-                showToast("Data processed successfully!", "toast-success");
 
                 ClearForm();
             }
