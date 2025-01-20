@@ -51,6 +51,15 @@ namespace Route
         protected global::System.Web.UI.WebControls.DropDownList DistDrp;
 
         /// <summary>
+        /// DistSearch control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText DistSearch;
+
+        /// <summary>
         /// RouteDrp control.
         /// </summary>
         /// <remarks>
@@ -58,6 +67,15 @@ namespace Route
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList RouteDrp;
+
+        /// <summary>
+        /// RouteSearch control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText RouteSearch;
 
         /// <summary>
         /// Submit control.
@@ -85,6 +103,24 @@ namespace Route
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView RouteLoadGridView;
+
+        /// <summary>
+        /// FileUpload_Id control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload FileUpload_Id;
+
+        /// <summary>
+        /// EnterBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button EnterBtn;
 
         /// <summary>
         /// RtrId control.

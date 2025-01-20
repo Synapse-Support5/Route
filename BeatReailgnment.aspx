@@ -1,14 +1,13 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Create.aspx.cs" Inherits="Route.Create" Async="true" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="BeatReailgnment.aspx.cs" Inherits="Route.BeatReailgnment" %>
 
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>Create</title>
+    <title>Beat Reailgnment</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="Content/bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
@@ -73,6 +72,35 @@
             max-height: 300px;
             max-width: 100%;
             overflow: auto;
+        }
+
+        /* Style for the file upload container */
+        .file-upload-container {
+            position: relative;
+        }
+
+        /* Style for the file input button */
+        .file-upload-input {
+            padding-right: 50px; /* Space for the image */
+        }
+
+        /* Style for the link that contains the image */
+        .file-upload-link {
+            position: absolute;
+            top: 50%;
+            right: 0px; /* Adjust position of the icon */
+            transform: translateY(-50%);
+            background-color: #e6e6e6; /* Same as the button color */
+            border-radius: 3px;
+            padding: 5px;
+            display: inline-block;
+        }
+
+        /* Style for the Excel image */
+        .file-upload-icon {
+            width: 25px; /* Adjust the size of the image */
+            height: 25px;
+            background-color: transparent; /* Keep the background transparent */
         }
 
         /* Container for the progress bar */
@@ -152,8 +180,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
         function showToast(message, styleClass) {
@@ -180,7 +206,17 @@
                 });
             }, 3000);
         }
+
+        function showNoteAlert() {
+            $('#noteAlert').show();
+        }
+
+        function hideNoteAlert() {
+            $('#noteAlert').hide();
+        }
+
     </script>
+
 </head>
 <body>
     <form id="form1" runat="server">
@@ -217,7 +253,6 @@
         </nav>
 
         <hr />
-
         <%--progress bar--%>
         <div id="loadingOverlay" style="display: none; z-index: 9999;">
             <div class="progress-bar-container">
@@ -236,125 +271,106 @@
                     </td>
                 </tr>
             </table>
-            <h2 style="text-align: center; margin-top: 20px;">Create Route</h2>
+            <h2 style="text-align: center; margin-top: 20px;">Beat Reailgnment</h2>
             <br />
 
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="DistDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" onchange="showLoading()" OnSelectedIndexChanged="DistDrp_SelectedIndexChanged">
-                            <%--<asp:ListItem Text="DistCode" Value=""></asp:ListItem>--%>
+                        <asp:DropDownList ID="DistDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="DistDrp_SelectedIndexChanged">
                         </asp:DropDownList>
                         <input type="text" id="DistSearch" runat="server" class="form-control" placeholder="Enter Distributor" />
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:TextBox ID="RtCode" runat="server" CssClass="form-control" placeholder="Route Code"
-                            onkeypress="return isValidInput(event);" oninput="removeInvalidChars(this);"></asp:TextBox>
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:TextBox ID="RtName" runat="server" CssClass="form-control" placeholder="Route Name"></asp:TextBox>
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="MnfId" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="MnfIdDrp_SelectedIndexChanged">
-                            <asp:ListItem Text="MNF Code" Value=""></asp:ListItem>
+                        <asp:DropDownList ID="FromRouteDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="FromRouteDrp_SelectedIndexChanged">
                         </asp:DropDownList>
+                        <input type="text" id="FromRouteSearch" runat="server" class="form-control" placeholder="Enter From Route" />
                     </div>
-                </div>
-
-                <div class="row mt-3">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="RtType" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="RtType_SelectedIndexChanged">
-                            <asp:ListItem Text="Route Type" Value=""></asp:ListItem>
+                        <asp:DropDownList ID="ToRouteDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="ToRouteDrp_SelectedIndexChanged">
                         </asp:DropDownList>
+                        <input type="text" id="ToRouteSearch" runat="server" class="form-control" placeholder="Enter To Route" />
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="RtCoverage" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="RtCoverage_SelectedIndexChanged">
-                            <asp:ListItem Text="Route Coverage" Value=""></asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <button type="button" class="form-control" id="btnOpenModal" data-toggle="modal" data-target="#exampleModalCenter">
-                            Call Days
-                        </button>
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:Button ID="Submit" runat="server" Text="Create" CssClass="btn btn-success form-control" OnClientClick="showLoading()" OnClick="btnSubmit_Click" />
-                    </div>
-                </div>
-
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <div class="grid-wrapper">
-                            <asp:GridView ID="RouteGridView" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                                Style="margin-bottom: 0px; text-align: center;">
-                                <Columns>
-                                    <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
-                                    <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
-                                    <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
-                                    <asp:BoundField DataField="MnfCde" HeaderText="MNFCode" />
-                                    <asp:BoundField DataField="RouteTypeName" HeaderText="RouteType" />
-                                    <asp:BoundField DataField="CoverageName" HeaderText="RouteCoverage" />
-                                    <asp:BoundField DataField="WeekDay" HeaderText="Call Days" />
-                                    <asp:BoundField DataField="Status" HeaderText="Status" />
-
-                                    <asp:TemplateField HeaderText="Modify">
-                                        <ItemTemplate>
-                                            <asp:Button ID="EditBtn" runat="server" Text="Edit" CssClass="btn btn-primary form-control" OnClientClick="showLoading()" OnClick="EditBtn_Click" />
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                </Columns>
-                            </asp:GridView>
-                        </div>
+                        <asp:Button ID="Submit" runat="server" Text="Submit" CssClass="btn btn-success form-control" OnClientClick="showLoading()" OnClick="Submit_Click" />
                     </div>
                 </div>
             </div>
 
-            <%-- Modal for Call Days --%>
-            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Call Days</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                            <%--<div class="form-group">
-                                <input type="text" id="txtSearch" class="form-control" placeholder="Search..." />
-                            </div>--%>
-                            <div class="form-group">
-                                <asp:GridView ID="DayId" runat="server" AutoPostBack="True" CssClass="table table-bordered form-group"
-                                    AutoGenerateColumns="false" DataKeyNames="" Style="margin-bottom: -18px; text-align: center">
-                                    <Columns>
-                                        <asp:TemplateField>
-                                            <HeaderTemplate>
-                                                <div style="margin-right: 10px;">
-                                                    <input type="checkbox" id="selectAllCheckBox" runat="server" style="margin-left: -3px;" class="form-check-input" onclick="selectAllCheckboxes(this)" />
-                                                </div>
-                                            </HeaderTemplate>
-                                            <ItemTemplate>
-                                                <div style="margin-right: 10px;">
-                                                    <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox" style="margin-left: -3px;" />
-                                                </div>
-                                            </ItemTemplate>
-                                        </asp:TemplateField>
-                                        <asp:TemplateField HeaderText="Call Days">
-                                            <ItemTemplate>
-                                                <asp:Label ID="DayLabel" runat="server" Text='<%# Eval("DayName") %>'></asp:Label>
-                                            </ItemTemplate>
-                                        </asp:TemplateField>
-                                    </Columns>
-                                    <HeaderStyle CssClass="header-hidden" />
-                                    <RowStyle CssClass="fixed-height-row" BackColor="#FFFFFF" />
-                                </asp:GridView>
-                            </div>
-                        </div>
+            <%-- GridView --%>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="grid-wrapper">
+                        <asp:GridView ID="DistCodeLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
+                            Style="margin-bottom: 0px; text-align: center;">
+                            <Columns>
+                                <asp:BoundField DataField="Distcode" HeaderText="Dist. Code" />
+                                <asp:BoundField DataField="RouteCode" HeaderText="Route Code" />
+                                <asp:BoundField DataField="RouteName" HeaderText="Route Name" />
+                                <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
+                                <asp:BoundField DataField="RtrNm" HeaderText="Retailer Name" />
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="grid-wrapper">
+                        <asp:GridView ID="FromRouteLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
+                            Style="margin-bottom: 0px; text-align: center;">
+                            <Columns>
+                                <asp:BoundField DataField="DistCode" HeaderText="Dist. Code" />
+                                <asp:BoundField DataField="DistNm" HeaderText="Distributor" />
+                                <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
+                                <asp:BoundField DataField="RtrNm" HeaderText="Retailer Name" />
+                                <asp:BoundField DataField="UrCode" HeaderText="UrCode" />
+
+                                <%--<asp:TemplateField HeaderText="Select All">
+                                    <HeaderTemplate>
+                                        <div style="margin-right: 10px;">
+                                            <input type="checkbox" id="parentCheckbox" style="margin-left: -3px;" class="form-check-input" />
+                                        </div>
+                                    </HeaderTemplate>
+                                    <ItemTemplate>
+                                        <div style="margin-right: 10px;">
+                                            <input type="checkbox" id="CheckBox1" runat="server" class="child-checkbox form-check-input rowCheckbox" style="margin-left: -3px;" />
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>--%>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="grid-wrapper">
+                        <asp:GridView ID="ToRouteLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
+                            Style="margin-bottom: 0px; text-align: center;">
+                            <Columns>
+                                <asp:BoundField DataField="DistCode" HeaderText="Dist. Code" />
+                                <asp:BoundField DataField="DistNm" HeaderText="Distributor" />
+                                <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
+                                <asp:BoundField DataField="RtrNm" HeaderText="Retailer Name" />
+                                <asp:BoundField DataField="UrCode" HeaderText="UrCode" />
+
+                                <asp:TemplateField HeaderText="Select All">
+                                    <HeaderTemplate>
+                                        <div style="margin-right: 10px;">
+                                            <input type="checkbox" id="parentCheckbox" style="margin-left: -3px;" class="form-check-input" />
+                                        </div>
+                                    </HeaderTemplate>
+                                    <ItemTemplate>
+                                        <div style="margin-right: 10px;">
+                                            <input type="checkbox" id="CheckBox1" runat="server" class="child-checkbox form-check-input rowCheckbox" style="margin-left: -3px;" />
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
                     </div>
                 </div>
             </div>
@@ -366,62 +382,8 @@
         </div>
     </form>
 
-    <%-- Script for selectall checkboxes in Modal --%>
-    <script type="text/javascript">
-        function selectAllCheckboxes(source) {
-            var checkboxes = document.querySelectorAll('.rowCheckbox');
-            for (var i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].checked = source.checked;
-            }
-        }
-    </script>
 
-    <%-- Script for search button in Modal --%>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#txtSearch").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
-                $("#<%= DayId.ClientID %> tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
-            });
-        });
-    </script>
-
-    <%-- Script for datepicker --%>
-    <script>
-        $(document).ready(function () {
-            $('.input-group.date').datepicker({
-                format: 'dd-mm-yyyy',
-                startDate: 'today',
-                autoclose: true
-            });
-        });
-    </script>
-
-    <%--Script to allow only alphanumeric characters, space, and underscore --%>
-    <script type="text/javascript">
-        // Function to allow only alphanumeric characters, space, and underscore
-        function isValidInput(event) {
-            var charCode = event.which || event.keyCode;
-            var charStr = String.fromCharCode(charCode);
-
-            // Allow backspace, delete, tab, escape, enter, space, underscore, and alphanumerics
-            if (charCode === 8 || charCode === 9 || charCode === 13 || charCode === 27 ||
-                charCode === 32 || charStr === "_" || /^[a-zA-Z0-9]$/.test(charStr)) {
-                return true;
-            }
-
-            return false;
-        }
-
-        // Function to remove any invalid characters if pasted into the textbox
-        function removeInvalidChars(input) {
-            input.value = input.value.replace(/[^a-zA-Z0-9 _]/g, '');
-        }
-    </script>
-
-    <%--scri[pt for progressbar--%>
+    <%--script for progressbar--%>
     <script>
         function showLoading() {
             document.getElementById('loadingOverlay').style.display = 'block';
@@ -432,7 +394,7 @@
         };
     </script>
 
-    <%--Script for Dist Dropdown Auto Search--%>
+    <%--Script for Dropdown Auto Search--%>
     <script>
         $(document).ready(function () {
             // Get DropDownList options and convert to an array
@@ -465,7 +427,99 @@
                 }
             });
         });
+
+        $(document).ready(function () {
+            // Get DropDownList options and convert to an array
+            var options = [];
+            $('#<%= FromRouteDrp.ClientID %> option').each(function () {
+                var text = $(this).text();  // RouteName
+                var value = $(this).val();  // RouteId
+                if (value) {
+                    options.push({ label: text, value: value });
+                }
+            });
+
+            // Initialize jQuery UI Autocomplete
+            $('#FromRouteSearch').autocomplete({
+                source: options,
+                select: function (event, ui) {
+                    // Set the selected value in the input box (RouteName)
+                    $('#FromRouteSearch').val(ui.item.label);
+
+                    // Update the hidden DropDownList (FromRouteDrp) value
+                    $('#<%= FromRouteDrp.ClientID %>').val(ui.item.value);
+
+                    // Trigger OnSelectedIndexChanged event of DropDownList
+                    __doPostBack('<%= FromRouteDrp.UniqueID %>', '');
+
+                    showLoading();
+
+                    // Return true to avoid clearing the selected value
+                    return true; // Ensures value remains in the input field
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            // Get DropDownList options and convert to an array
+            var options = [];
+            $('#<%= ToRouteDrp.ClientID %> option').each(function () {
+                var text = $(this).text();  // RouteName
+                var value = $(this).val();  // RouteId
+                if (value) {
+                    options.push({ label: text, value: value });
+                }
+            });
+
+            // Initialize jQuery UI Autocomplete
+            $('#ToRouteSearch').autocomplete({
+                source: options,
+                select: function (event, ui) {
+                    // Set the selected value in the input box (RouteName)
+                    $('#ToRouteSearch').val(ui.item.label);
+
+                    // Update the hidden DropDownList (ToRouteDrp) value
+                    $('#<%= ToRouteDrp.ClientID %>').val(ui.item.value);
+
+                    // Trigger OnSelectedIndexChanged event of DropDownList
+                    __doPostBack('<%= ToRouteDrp.UniqueID %>', '');
+
+                    showLoading();
+
+                    // Return true to avoid clearing the selected value
+                    return true; // Ensures value remains in the input field
+                }
+            });
+        });
     </script>
+
+    <%-- Script for selectall checkboxes in RouteTransferSplitGridview --%>
+    <script>
+        $(document).ready(function () {
+            const updateParentCheckbox = () => {
+                const childCheckboxes = $(".child-checkbox");
+                const checkedCheckboxes = childCheckboxes.filter(":checked");
+                const parentCheckbox = $("#parentCheckbox");
+
+                if (checkedCheckboxes.length === 0) {
+                    parentCheckbox.prop("checked", false).prop("indeterminate", false);
+                } else if (checkedCheckboxes.length === childCheckboxes.length) {
+                    parentCheckbox.prop("checked", true).prop("indeterminate", false);
+                } else {
+                    parentCheckbox.prop("checked", false).prop("indeterminate", true);
+                }
+            };
+
+            $("#parentCheckbox").on("change", function () {
+                const isChecked = $(this).is(":checked");
+                $(".child-checkbox").prop("checked", isChecked);
+            });
+
+            $(".child-checkbox").on("change", updateParentCheckbox);
+
+            updateParentCheckbox(); // Initialize state on page load
+        });
+</script>
 
 </body>
 </html>

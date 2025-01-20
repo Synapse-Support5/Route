@@ -112,6 +112,9 @@
                         <li class="nav-item">
                             <a class="nav-link" runat="server" href="~/NewGeo">NewGeo</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">BeatReailgnment</a>
+                        </li>
                     </ul>
                 </div>
             </div>

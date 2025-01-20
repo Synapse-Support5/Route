@@ -46,44 +46,106 @@ namespace Route
         {
             try
             {
-                Session["name"] = "G116036";
+                ////Session["name"] = "G116036";
                 //Session["name"] = Request.ServerVariables["REMOTE_USER"].Substring(6);
 
-                if (Session["name"].ToString() != "")
+                //if (Session["name"].ToString() != "")
+                //{
+                //    if (con.State == ConnectionState.Closed)
+                //    {
+                //        con.Open();
+                //    }
+                //    SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
+                //    cmd1.CommandType = CommandType.StoredProcedure;
+                //    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                //    cmd1.Parameters.AddWithValue("@ActionType", "Session");
+                //    cmd1.Parameters.AddWithValue("@DistCode", "");
+                //    cmd1.Parameters.AddWithValue("@StateID", "");
+                //    cmd1.Parameters.AddWithValue("@AreaID", "");
+                //    cmd1.Parameters.AddWithValue("@ZoneID", "");
+                //    cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                //    cmd1.Parameters.AddWithValue("@RouteCode", "");
+
+                //    cmd1.CommandTimeout = 6000;
+                //    SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                //    da.Fill(resdt);
+
+                //    if (resdt.Rows.Count > 0)
+                //    {
+                //        //lblUserName.Text = "User Name > " + resdt.Rows[0][0].ToString() + ": User ID > " + Session["name"].ToString();
+                //        lblUserName.Text = "Welcome : " + resdt.Rows[0][0].ToString();
+                //        hdnBusinessType.Value = resdt.Rows[0][2].ToString();
+                //        hdnRole.Value = resdt.Rows[0][3].ToString();
+
+                //        StateLoad();
+                //    }
+                //    else
+                //    {
+                //        Response.Redirect("AccessDeniedPage.aspx");
+                //    }
+                //    con.Close();
+                //}
+                //else
+                //{
+                //    Response.Redirect("AccessDeniedPage.aspx");
+                //}
+
+
+                string remoteUser = "G116036";
+                //string remoteUser = Request.ServerVariables["REMOTE_USER"];
+
+                if (!string.IsNullOrEmpty(remoteUser))
                 {
-                    if (con.State == ConnectionState.Closed)
+                    if (remoteUser == Request.ServerVariables["REMOTE_USER"]) 
                     {
-                        con.Open();
+                        Session["name"] = remoteUser.Substring(6);
                     }
-                    SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
-                    cmd1.CommandType = CommandType.StoredProcedure;
-                    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
-                    cmd1.Parameters.AddWithValue("@ActionType", "Session");
-                    cmd1.Parameters.AddWithValue("@DistCode", "");
-                    cmd1.Parameters.AddWithValue("@StateID", "");
-                    cmd1.Parameters.AddWithValue("@AreaID", "");
-                    cmd1.Parameters.AddWithValue("@ZoneID", "");
-                    cmd1.Parameters.AddWithValue("@ToDistCode", "");
-                    cmd1.Parameters.AddWithValue("@RouteCode", "");
-
-                    cmd1.CommandTimeout = 6000;
-                    SqlDataAdapter da = new SqlDataAdapter(cmd1);
-                    da.Fill(resdt);
-
-                    if (resdt.Rows.Count > 0)
+                    else
                     {
-                        //lblUserName.Text = "User Name > " + resdt.Rows[0][0].ToString() + ": User ID > " + Session["name"].ToString();
-                        lblUserName.Text = "Welcome : " + resdt.Rows[0][0].ToString();
-                        hdnBusinessType.Value = resdt.Rows[0][2].ToString();
-                        hdnRole.Value = resdt.Rows[0][3].ToString();
+                        Session["name"] = remoteUser;
+                    }
 
-                        StateLoad();
+                    if (!string.IsNullOrEmpty(Session["name"]?.ToString()))
+                    {
+                        if (con.State == ConnectionState.Closed)
+                        {
+                            con.Open();
+                        }
+
+                        SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
+                        cmd1.CommandType = CommandType.StoredProcedure;
+                        cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                        cmd1.Parameters.AddWithValue("@ActionType", "Session");
+                        cmd1.Parameters.AddWithValue("@DistCode", "");
+                        cmd1.Parameters.AddWithValue("@StateID", "");
+                        cmd1.Parameters.AddWithValue("@AreaID", "");
+                        cmd1.Parameters.AddWithValue("@ZoneID", "");
+                        cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                        cmd1.Parameters.AddWithValue("@RouteCode", "");
+                        cmd1.CommandTimeout = 6000;
+
+                        SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                        da.Fill(resdt);
+
+                        if (resdt.Rows.Count > 0)
+                        {
+                            lblUserName.Text = "Welcome : " + resdt.Rows[0][0].ToString();
+                            hdnBusinessType.Value = resdt.Rows[0][2].ToString();
+                            hdnRole.Value = resdt.Rows[0][3].ToString();
+
+                            StateLoad();
+                        }
+                        else
+                        {
+                            Response.Redirect("AccessDeniedPage.aspx");
+                        }
+
+                        con.Close();
                     }
                     else
                     {
                         Response.Redirect("AccessDeniedPage.aspx");
                     }
-                    con.Close();
                 }
                 else
                 {
@@ -92,50 +154,9 @@ namespace Route
             }
             catch (Exception ex)
             {
-                showToast("An error occurred: " + ex.Message, "toast-danger");
+                showToast("An error occurred: ", "toast-danger");
             }
         }
-        #endregion
-
-        #region SelectTypeTransferButtons
-        //protected void RouteTransferBtn_Click(object sender, EventArgs e)
-        //{
-        //    RouteTransferBtn_Submit();
-        //}
-        //protected void RetTransferBtn_Click(object sender, EventArgs e)
-        //{
-        //    RetTransferBtn_Submit();
-        //}
-        //public void RouteTransferBtn_Submit()
-        //{
-        //    RouteTransferBtn.CssClass = "btn btn-info form-control";
-        //    RetTransferBtn.CssClass = "btn btn-outline-info form-control";
-
-        //    routeTransferDiv.Visible = true;
-        //    retailerTransferDiv.Visible = false;
-
-        //    LabelId.Text = "Route";
-
-        //    //RouteFromDistLoad();
-        //}
-        //public void RetTransferBtn_Submit()
-        //{
-        //    RouteTransferBtn.CssClass = "btn btn-outline-info form-control";
-        //    RetTransferBtn.CssClass = "btn btn-info form-control";
-
-        //    routeTransferDiv.Visible = false;
-        //    retailerTransferDiv.Visible = true;
-
-        //    LabelId.Text = "Retailer";
-
-        //    RouteTransExistGridView.DataSource = null;
-        //    RouteTransExistGridView.DataBind();
-
-        //    RouteTransSplitGridView.DataSource = null;
-        //    RouteTransSplitGridView.DataBind();
-
-        //    RetFromDistLoad();
-        //}
         #endregion
 
         #region SelectedIndexChanged
@@ -182,6 +203,7 @@ namespace Route
         protected void ZoneDrp_SelectedIndexChanged(object sender, EventArgs e)
         {
             ToDistDrp.ClearSelection();
+            ToDistSearch.Value = string.Empty;
             resdt.Rows.Clear();
             ToDistDrp.DataSource = resdt;
             ToDistDrp.DataBind();
@@ -193,6 +215,8 @@ namespace Route
         protected void RouteTransToDistDrp_SelectedIndexChanged(object sender, EventArgs e)
         {
             RouteTransToDistExistCheck();
+
+            ToDistSearch.Value = ToDistDrp.SelectedItem.ToString();
         }
         #endregion
 
@@ -578,8 +602,6 @@ namespace Route
                         HtmlInputCheckBox chkBox = (HtmlInputCheckBox)row.FindControl("CheckBox1");
                         if (chkBox != null && chkBox.Checked)
                         {
-                            //string routeCode = row.Cells[1].Text;
-                            //checkedRoutes.Add(routeCode);
                             anyCheckboxSelected = true;
                         }
                     }
@@ -591,15 +613,6 @@ namespace Route
                         HtmlInputCheckBox chkBox = (HtmlInputCheckBox)row.FindControl("CheckBox1");
                         if (chkBox != null && chkBox.Checked)
                         {
-                            //string routeCode = row.Cells[1].Text;
-                            //checkedRoutes.Add(routeCode);
-
-                            //string urCode = row.Cells[4].Text;
-                            //checkedRoutes.Add(urCode);
-
-                            //string rtrCode = row.Cells[3].Text;
-                            //checkedRoutes.Add(rtrCode);
-
                             anyCheckboxSelected = true;
 
                         }
@@ -748,6 +761,7 @@ namespace Route
         }
         #endregion
 
+        #region ProceedTransfer
         public void ProceedTransfer()
         {
             try
@@ -863,46 +877,20 @@ namespace Route
                 showToast("An error occurred: " + ex.Message, "toast-danger");
             }
         }
-
-        #region RetFromDistLoad
-        public void RetFromDistLoad()
-        {
-            try
-            {
-                //if (con.State == ConnectionState.Closed)
-                //{
-                //    con.Open();
-                //}
-                //SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer", con);
-                //cmd1.CommandType = CommandType.StoredProcedure;
-                //cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
-                //cmd1.Parameters.AddWithValue("@ActionType", "FromDistLoad");
-                //cmd1.Parameters.AddWithValue("@DistCode", FromDistDrp.SelectedValue);
-                //cmd1.Parameters.AddWithValue("@StateID", "");
-                //cmd1.Parameters.AddWithValue("@AreaID", "");
-                //cmd1.Parameters.AddWithValue("@ZoneID", "");
-                //cmd1.Parameters.AddWithValue("@ToDistCode", "");
-                //cmd1.Parameters.AddWithValue("@RouteCode", "");
-                //cmd1.ExecuteNonQuery();
-
-                //cmd1.CommandTimeout = 6000;
-
-                //SqlDataAdapter da = new SqlDataAdapter(cmd1);
-                //resdt.Rows.Clear();
-                //da.Fill(resdt);
-                //ToDistDrp.DataSource = resdt;
-                //ToDistDrp.DataTextField = resdt.Columns["DistNm"].ToString();
-                //ToDistDrp.DataValueField = resdt.Columns["DistCode"].ToString();
-                //ToDistDrp.DataBind();
-                //ToDistDrp.Items.Insert(0, new ListItem("Dist. Code", ""));
-                //con.Close();
-            }
-            catch (Exception ex)
-            {
-                showToast("An error occurred: " + ex.Message, "toast-danger");
-            }
-        }
         #endregion
+
+        //#region RetFromDistLoad
+        //public void RetFromDistLoad()
+        //{
+        //    try
+        //    {
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        showToast("An error occurred: " + ex.Message, "toast-danger");
+        //    }
+        //}
+        //#endregion
 
         #region SelectBtn_Click
         protected void SelectBtn_Click(object sender, EventArgs e)
@@ -971,6 +959,240 @@ namespace Route
                 showToast("An error occurred: " + ex.Message, "toast-danger");
             }
 
+        }
+        #endregion
+
+        #region ConfirmationDialog
+        public void ConfirmationDialog()
+        {
+            List<string> checkedRoutes = new List<string>();
+
+            DataTable dtforParam = new DataTable();
+            dtforParam.Columns.Add("RouteCode", typeof(string));
+            dtforParam.Columns.Add("UrCode", typeof(string));
+            dtforParam.Columns.Add("RtrCode", typeof(string));
+
+            try
+            {
+
+                if (TypeDrp.SelectedValue == "Existing")
+                {
+                    foreach (GridViewRow row in RouteTransExistGridView.Rows)
+                    {
+                        HtmlInputCheckBox chkBox = (HtmlInputCheckBox)row.FindControl("CheckBox1");
+                        if (chkBox != null && chkBox.Checked)
+                        {
+                            string routeCode = row.Cells[1].Text;
+                            //checkedRoutes.Add(routeCode);
+
+                            existingUr = "";
+                            existingRtr = "";
+
+                            dtforParam.Rows.Add(routeCode, existingUr, existingRtr);
+
+                            //anyCheckboxSelected = true;
+                            existing = 1;
+
+                            //SP_Route_Transfer_RetailerExistingAnotherDBR(routeCode, existing);
+                        }
+                    }
+                }
+                else if (TypeDrp.SelectedValue == "Split")
+                {
+                    foreach (GridViewRow row in RouteTransSplitRetailerGrid.Rows)
+                    {
+                        HtmlInputCheckBox chkBox = (HtmlInputCheckBox)row.FindControl("CheckBox1");
+                        if (chkBox != null && chkBox.Checked)
+                        {
+                            string routeCode = row.Cells[1].Text;
+                            //checkedRoutes.Add(routeCode);
+
+                            existingUr = row.Cells[4].Text;
+                            existingRtr = row.Cells[3].Text;
+
+                            dtforParam.Rows.Add(routeCode, existingUr, existingRtr);
+
+                            //anyCheckboxSelected = true;
+                            existing = 0;
+
+
+                        }
+                    }
+                }
+
+                //string routecode = string.Join(",", checkedRoutes);
+
+                SP_Route_Transfer_RetailerExistingAnotherDBR(dtforParam);
+
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+        #endregion
+
+        #region SP_Route_Transfer_RetailerExistingAnotherDBR
+        public void SP_Route_Transfer_RetailerExistingAnotherDBR(DataTable dtforParam)
+        {
+            try
+            {
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                }
+                SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer_RetailerExistingAnotherDBR", con);
+                cmd1.CommandType = CommandType.StoredProcedure;
+                cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                cmd1.Parameters.AddWithValue("@ActionType", "RetailerExistingAnotherDBR");
+                cmd1.Parameters.AddWithValue("@FromDistCode", FromDistDrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                cmd1.Parameters.AddWithValue("@RouteDetails", dtforParam);
+                cmd1.Parameters.AddWithValue("@Distid", "");
+                cmd1.Parameters.AddWithValue("@Existing", existing);
+
+                cmd1.ExecuteNonQuery();
+
+                cmd1.CommandTimeout = 6000;
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                resdt.Rows.Clear();
+                da.Fill(resdt);
+
+                if (resdt.Rows.Count > 0)
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowModal", "$('#alertModal').modal('show');", true);
+                    AlertModalGrid.DataSource = resdt;
+                    AlertModalGrid.DataBind();
+
+                    DBR.Text = FromDistDrp.SelectedValue;
+                    DBR2.Text = FromDistDrp.SelectedValue;
+                    //RouteTransSplitRetailerGrid.DataSource = null;
+                    //RouteTransSplitRetailerGrid.DataBind();
+                }
+                else
+                {
+                    ProceedTransfer();
+                    FromDistDrp.ClearSelection();
+                    ToDistDrp.ClearSelection();
+                    ToDistSearch.Value = string.Empty;
+                }
+
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+        #endregion
+
+        #region InActiveRetailerExistingAnotherDBR
+        public void InActiveRetailerExistingAnotherDBR()
+        {
+            try
+            {
+                DataTable dtforParam1 = new DataTable();
+                dtforParam1.Columns.Add("RouteCode", typeof(string));
+                dtforParam1.Columns.Add("UrCode", typeof(string));
+                dtforParam1.Columns.Add("RtrCode", typeof(string));
+
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                }
+
+                foreach (GridViewRow row in AlertModalGrid.Rows)
+                {
+                    string rtrCode = row.Cells[2].Text;
+                    string urCode = row.Cells[4].Text;
+                    string distId = row.Cells[5].Text;
+                    dtforParam1.Rows.Add("", urCode, rtrCode);
+
+                    SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer_RetailerExistingAnotherDBR", con);
+                    cmd1.CommandType = CommandType.StoredProcedure;
+                    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                    cmd1.Parameters.AddWithValue("@ActionType", "InActiveRetailerExistingAnotherDBR");
+                    cmd1.Parameters.AddWithValue("@FromDistCode", "");
+                    cmd1.Parameters.AddWithValue("@ToDistCode", "");
+                    cmd1.Parameters.AddWithValue("@RouteDetails", dtforParam1);
+                    cmd1.Parameters.AddWithValue("@Distid", distId);
+                    cmd1.Parameters.AddWithValue("@Existing", 0);
+
+                    cmd1.ExecuteNonQuery();
+                    dtforParam1.Rows.Clear();
+                    dtforParam1.AcceptChanges();
+                }
+
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+        #endregion
+
+        #region RetailerExceptionLog
+        public void RetailerExceptionLog()
+        {
+            try
+            {
+                string inActivatedDistcode = FromDistDrp.SelectedValue;
+                string inActivatedToDistcode = ToDistDrp.SelectedValue;
+
+                foreach (GridViewRow row in AlertModalGrid.Rows)
+                {
+                    string inActivatedRtrCode = row.Cells[2].Text;
+                    string inActivatedRtrName = row.Cells[3].Text;
+                    string inActivatedUrCode = row.Cells[4].Text;
+                    string remarks = $"User Approved to Transfer from {inActivatedDistcode} to {inActivatedToDistcode}";//@From to @Todist
+
+                    if (con.State == ConnectionState.Closed)
+                    {
+                        con.Open();
+                    }
+                    SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer_Exceptional_Log", con);
+                    cmd1.CommandType = CommandType.StoredProcedure;
+                    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                    cmd1.Parameters.AddWithValue("@ActionType", "ExceptionLog");
+                    cmd1.Parameters.AddWithValue("@InActivatedDistCode", inActivatedDistcode);
+                    cmd1.Parameters.AddWithValue("@InActivatedRtrCode", inActivatedRtrCode);
+                    cmd1.Parameters.AddWithValue("@InActivatedRtrName", inActivatedRtrName);
+                    cmd1.Parameters.AddWithValue("@InActivatedUrcode", inActivatedUrCode);
+                    cmd1.Parameters.AddWithValue("@Remarks", remarks);
+
+                    cmd1.ExecuteNonQuery();
+
+                    con.Close();
+                }
+                FromDistDrp.ClearSelection();
+                ToDistDrp.ClearSelection();
+                ToDistSearch.Value = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+        #endregion
+
+        #region ProceedBtn_Click
+        protected void ProceedBtn_Click(object sender, EventArgs e)
+        {
+            InActiveRetailerExistingAnotherDBR();
+            ProceedTransfer();
+            RetailerExceptionLog();
+
+            RouteTransSplitRetailerGrid.DataSource = null;
+            RouteTransSplitRetailerGrid.DataBind();
+        }
+        #endregion
+
+        #region CancelBtn_Click
+        protected void CancelBtn_Click(object sender, EventArgs e)
+        {
+            return;
         }
         #endregion
 
@@ -1182,225 +1404,5 @@ namespace Route
             }
         }
         #endregion
-
-        public void ConfirmationDialog()
-        {
-            List<string> checkedRoutes = new List<string>();
-
-            DataTable dtforParam = new DataTable();
-            dtforParam.Columns.Add("RouteCode", typeof(string));
-            dtforParam.Columns.Add("UrCode", typeof(string));
-            dtforParam.Columns.Add("RtrCode", typeof(string));
-
-            try
-            {
-
-                if (TypeDrp.SelectedValue == "Existing")
-                {
-                    foreach (GridViewRow row in RouteTransExistGridView.Rows)
-                    {
-                        HtmlInputCheckBox chkBox = (HtmlInputCheckBox)row.FindControl("CheckBox1");
-                        if (chkBox != null && chkBox.Checked)
-                        {
-                            string routeCode = row.Cells[1].Text;
-                            //checkedRoutes.Add(routeCode);
-
-                            existingUr = "";
-                            existingRtr = "";
-
-                            dtforParam.Rows.Add(routeCode, existingUr, existingRtr);
-
-                            //anyCheckboxSelected = true;
-                            existing = 1;
-
-                            //SP_Route_Transfer_RetailerExistingAnotherDBR(routeCode, existing);
-                        }
-                    }
-                }
-                else if (TypeDrp.SelectedValue == "Split")
-                {
-                    foreach (GridViewRow row in RouteTransSplitRetailerGrid.Rows)
-                    {
-                        HtmlInputCheckBox chkBox = (HtmlInputCheckBox)row.FindControl("CheckBox1");
-                        if (chkBox != null && chkBox.Checked)
-                        {
-                            string routeCode = row.Cells[1].Text;
-                            //checkedRoutes.Add(routeCode);
-
-                            existingUr = row.Cells[4].Text;
-                            existingRtr = row.Cells[3].Text;
-
-                            dtforParam.Rows.Add(routeCode, existingUr, existingRtr);
-
-                            //anyCheckboxSelected = true;
-                            existing = 0;
-
-                            
-                        }
-                    }
-                }
-
-                //string routecode = string.Join(",", checkedRoutes);
-
-                SP_Route_Transfer_RetailerExistingAnotherDBR(dtforParam);
-
-            }
-            catch (Exception ex)
-            {
-                showToast("An error occurred: " + ex.Message, "toast-danger");
-            }
-        }
-
-        public void SP_Route_Transfer_RetailerExistingAnotherDBR(DataTable dtforParam)
-        {
-            try
-            {
-                if (con.State == ConnectionState.Closed)
-                {
-                    con.Open();
-                }
-                SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer_RetailerExistingAnotherDBR", con);
-                cmd1.CommandType = CommandType.StoredProcedure;
-                cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
-                cmd1.Parameters.AddWithValue("@ActionType", "RetailerExistingAnotherDBR");
-                cmd1.Parameters.AddWithValue("@FromDistCode", FromDistDrp.SelectedValue);
-                cmd1.Parameters.AddWithValue("@ToDistCode", "");
-                cmd1.Parameters.AddWithValue("@RouteDetails", dtforParam);
-                cmd1.Parameters.AddWithValue("@Distid", "");
-                cmd1.Parameters.AddWithValue("@Existing", existing);
-
-                cmd1.ExecuteNonQuery();
-
-                cmd1.CommandTimeout = 6000;
-
-                SqlDataAdapter da = new SqlDataAdapter(cmd1);
-                resdt.Rows.Clear();
-                da.Fill(resdt);
-
-                if (resdt.Rows.Count > 0)
-                {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowModal", "$('#alertModal').modal('show');", true);
-                    AlertModalGrid.DataSource = resdt;
-                    AlertModalGrid.DataBind();
-
-                    DBR.Text = FromDistDrp.SelectedValue;
-                    DBR2.Text = FromDistDrp.SelectedValue;
-                    //RouteTransSplitRetailerGrid.DataSource = null;
-                    //RouteTransSplitRetailerGrid.DataBind();
-                }
-                else
-                {
-                    ProceedTransfer();
-                    FromDistDrp.ClearSelection();
-                    ToDistDrp.ClearSelection();
-                }
-
-                con.Close();
-            }
-            catch (Exception ex)
-            {
-                showToast("An error occurred: " + ex.Message, "toast-danger");
-            }
-        }
-
-        public void InActiveRetailerExistingAnotherDBR()
-        {
-            try
-            {
-                DataTable dtforParam1 = new DataTable();
-                dtforParam1.Columns.Add("RouteCode", typeof(string));
-                dtforParam1.Columns.Add("UrCode", typeof(string));
-                dtforParam1.Columns.Add("RtrCode", typeof(string));
-
-                if (con.State == ConnectionState.Closed)
-                {
-                    con.Open();
-                }
-
-                foreach (GridViewRow row in AlertModalGrid.Rows)
-                {
-                    string rtrCode = row.Cells[2].Text;
-                    string urCode = row.Cells[4].Text;
-                    string distId = row.Cells[5].Text;
-                    dtforParam1.Rows.Add("", urCode, rtrCode);
-
-                    SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer_RetailerExistingAnotherDBR", con);
-                    cmd1.CommandType = CommandType.StoredProcedure;
-                    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
-                    cmd1.Parameters.AddWithValue("@ActionType", "InActiveRetailerExistingAnotherDBR");
-                    cmd1.Parameters.AddWithValue("@FromDistCode", "");
-                    cmd1.Parameters.AddWithValue("@ToDistCode", "");
-                    cmd1.Parameters.AddWithValue("@RouteDetails", dtforParam1);
-                    cmd1.Parameters.AddWithValue("@Distid", distId);
-                    cmd1.Parameters.AddWithValue("@Existing", 0);
-
-                    cmd1.ExecuteNonQuery();
-                    dtforParam1.Rows.Clear();
-                    dtforParam1.AcceptChanges();
-                }
-
-                con.Close();
-            }
-            catch (Exception ex)
-            {
-                showToast("An error occurred: " + ex.Message, "toast-danger");
-            }
-        }
-
-        public void RetailerExceptionLog()
-        {
-            try
-            {
-                string inActivatedDistcode = FromDistDrp.SelectedValue;
-                string inActivatedToDistcode = ToDistDrp.SelectedValue;
-
-                foreach (GridViewRow row in AlertModalGrid.Rows)
-                {
-                    string inActivatedRtrCode = row.Cells[2].Text;
-                    string inActivatedRtrName = row.Cells[3].Text;
-                    string inActivatedUrCode = row.Cells[4].Text;
-                    string remarks = $"User Approved to Transfer from {inActivatedDistcode} to {inActivatedToDistcode}";//@From to @Todist
-
-                    if (con.State == ConnectionState.Closed)
-                    {
-                        con.Open();
-                    }
-                    SqlCommand cmd1 = new SqlCommand("SP_Route_Transfer_Exceptional_Log", con);
-                    cmd1.CommandType = CommandType.StoredProcedure;
-                    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
-                    cmd1.Parameters.AddWithValue("@ActionType", "ExceptionLog");
-                    cmd1.Parameters.AddWithValue("@InActivatedDistCode", inActivatedDistcode);
-                    cmd1.Parameters.AddWithValue("@InActivatedRtrCode", inActivatedRtrCode);
-                    cmd1.Parameters.AddWithValue("@InActivatedRtrName", inActivatedRtrName);
-                    cmd1.Parameters.AddWithValue("@InActivatedUrcode", inActivatedUrCode);
-                    cmd1.Parameters.AddWithValue("@Remarks", remarks);
-
-                    cmd1.ExecuteNonQuery();
-
-                    con.Close();
-                }
-                FromDistDrp.ClearSelection();
-                ToDistDrp.ClearSelection();
-            }
-            catch (Exception ex)
-            {
-                showToast("An error occurred: " + ex.Message, "toast-danger");
-            }
-        }
-
-        protected void ProceedBtn_Click(object sender, EventArgs e)
-        {
-            InActiveRetailerExistingAnotherDBR();
-            ProceedTransfer();
-            RetailerExceptionLog();
-
-            RouteTransSplitRetailerGrid.DataSource = null;
-            RouteTransSplitRetailerGrid.DataBind();
-        }
-
-        protected void CancelBtn_Click(object sender, EventArgs e)
-        {
-            return;
-        }
     }
 }

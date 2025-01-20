@@ -156,6 +156,9 @@
                         <li class="nav-item">
                             <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">BeatReailgnment</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -183,6 +186,7 @@
                 </tr>
             </table>
             <br />
+
 
             <%-- Notification Label --%>
             <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;"></div>

@@ -11,7 +11,7 @@ namespace Route
 {
 
 
-    public partial class Create
+    public partial class BeatReailgnment
     {
 
         /// <summary>
@@ -87,49 +87,40 @@ namespace Route
         protected global::System.Web.UI.HtmlControls.HtmlInputText DistSearch;
 
         /// <summary>
-        /// RtCode control.
+        /// FromRouteDrp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox RtCode;
+        protected global::System.Web.UI.WebControls.DropDownList FromRouteDrp;
 
         /// <summary>
-        /// RtName control.
+        /// FromRouteSearch control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox RtName;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText FromRouteSearch;
 
         /// <summary>
-        /// MnfId control.
+        /// ToRouteDrp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList MnfId;
+        protected global::System.Web.UI.WebControls.DropDownList ToRouteDrp;
 
         /// <summary>
-        /// RtType control.
+        /// ToRouteSearch control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList RtType;
-
-        /// <summary>
-        /// RtCoverage control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList RtCoverage;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText ToRouteSearch;
 
         /// <summary>
         /// Submit control.
@@ -141,22 +132,31 @@ namespace Route
         protected global::System.Web.UI.WebControls.Button Submit;
 
         /// <summary>
-        /// RouteGridView control.
+        /// DistCodeLoadGridView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView RouteGridView;
+        protected global::System.Web.UI.WebControls.GridView DistCodeLoadGridView;
 
         /// <summary>
-        /// DayId control.
+        /// FromRouteLoadGridView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView DayId;
+        protected global::System.Web.UI.WebControls.GridView FromRouteLoadGridView;
+
+        /// <summary>
+        /// ToRouteLoadGridView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView ToRouteLoadGridView;
 
         /// <summary>
         /// hdnBusinessType control.

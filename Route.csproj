@@ -127,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AccessDeniedPage.aspx" />
+    <Content Include="BeatReailgnment.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
@@ -202,6 +203,13 @@
     </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="BeatReailgnment.aspx.cs">
+      <DependentUpon>BeatReailgnment.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="BeatReailgnment.aspx.designer.cs">
+      <DependentUpon>BeatReailgnment.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Create.aspx.cs">
       <DependentUpon>Create.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

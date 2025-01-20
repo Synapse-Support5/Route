@@ -9,6 +9,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using System.Xml.Linq;
+using OfficeOpenXml;
+using System.IO;
 
 namespace Route
 {
@@ -33,37 +35,90 @@ namespace Route
         {
             try
             {
-                Session["name"] = "G116036";
-                //Session["name"] = Request.ServerVariables["REMOTE_USER"].Substring(6);
+                //Session["name"] = "G116036";
+                ////Session["name"] = Request.ServerVariables["REMOTE_USER"].Substring(6);
 
-                if (Session["name"].ToString() != "")
+                //if (Session["name"].ToString() != "")
+                //{
+                //if (con.State == ConnectionState.Closed)
+                //{
+                //    con.Open();
+                //}
+                //SqlCommand cmd1 = new SqlCommand("SP_Route_Map_Dropdowns", con);
+                //cmd1.CommandType = CommandType.StoredProcedure;
+                //cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                //cmd1.Parameters.AddWithValue("@ActionType", "Session");
+                //cmd1.Parameters.AddWithValue("@DistCode", "");
+
+                //cmd1.CommandTimeout = 6000;
+                //SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                //da.Fill(resdt);
+
+                //if (resdt.Rows.Count > 0)
+                //{
+                //    //lblUserName.Text = "User Name > " + resdt.Rows[0][0].ToString() + ": User ID > " + Session["name"].ToString();
+                //    lblUserName.Text = "Welcome : " + resdt.Rows[0][0].ToString();
+                //    hdnBusinessType.Value = resdt.Rows[0][2].ToString();
+                //    hdnRole.Value = resdt.Rows[0][3].ToString();
+                //}
+                //else
+                //{
+                //    Response.Redirect("AccessDeniedPage.aspx");
+                //}
+                //con.Close();
+                //}
+                //else
+                //{
+                //    Response.Redirect("AccessDeniedPage.aspx");
+                //}
+
+                string remoteUser = "G116036";
+                //string remoteUser = Request.ServerVariables["REMOTE_USER"];
+
+                if (!string.IsNullOrEmpty(remoteUser))
                 {
-                    if (con.State == ConnectionState.Closed)
+                    if (remoteUser == Request.ServerVariables["REMOTE_USER"])
                     {
-                        con.Open();
+                        Session["name"] = remoteUser.Substring(6);
                     }
-                    SqlCommand cmd1 = new SqlCommand("SP_Route_Map_Dropdowns", con);
-                    cmd1.CommandType = CommandType.StoredProcedure;
-                    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
-                    cmd1.Parameters.AddWithValue("@ActionType", "Session");
-                    cmd1.Parameters.AddWithValue("@DistCode", "");
-
-                    cmd1.CommandTimeout = 6000;
-                    SqlDataAdapter da = new SqlDataAdapter(cmd1);
-                    da.Fill(resdt);
-
-                    if (resdt.Rows.Count > 0)
+                    else
                     {
-                        //lblUserName.Text = "User Name > " + resdt.Rows[0][0].ToString() + ": User ID > " + Session["name"].ToString();
-                        lblUserName.Text = "Welcome : " + resdt.Rows[0][0].ToString();
-                        hdnBusinessType.Value = resdt.Rows[0][2].ToString();
-                        hdnRole.Value = resdt.Rows[0][3].ToString();
+                        Session["name"] = remoteUser;
+                    }
+
+                    if (!string.IsNullOrEmpty(Session["name"]?.ToString()))
+                    {
+                        if (con.State == ConnectionState.Closed)
+                        {
+                            con.Open();
+                        }
+                        SqlCommand cmd1 = new SqlCommand("SP_Route_Map_Dropdowns", con);
+                        cmd1.CommandType = CommandType.StoredProcedure;
+                        cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                        cmd1.Parameters.AddWithValue("@ActionType", "Session");
+                        cmd1.Parameters.AddWithValue("@DistCode", "");
+
+                        cmd1.CommandTimeout = 6000;
+                        SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                        da.Fill(resdt);
+
+                        if (resdt.Rows.Count > 0)
+                        {
+                            //lblUserName.Text = "User Name > " + resdt.Rows[0][0].ToString() + ": User ID > " + Session["name"].ToString();
+                            lblUserName.Text = "Welcome : " + resdt.Rows[0][0].ToString();
+                            hdnBusinessType.Value = resdt.Rows[0][2].ToString();
+                            hdnRole.Value = resdt.Rows[0][3].ToString();
+                        }
+                        else
+                        {
+                            Response.Redirect("AccessDeniedPage.aspx");
+                        }
+                        con.Close();
                     }
                     else
                     {
                         Response.Redirect("AccessDeniedPage.aspx");
                     }
-                    con.Close();
                 }
                 else
                 {
@@ -85,6 +140,8 @@ namespace Route
 
             RouteLoad();
             DistCodeLoadGrid();
+
+            DistSearch.Value = DistDrp.SelectedItem.ToString();
         }
 
         protected void RouteDrp_SelectedIndexChanged(object sender, EventArgs e)
@@ -94,6 +151,8 @@ namespace Route
 
             RtrLoad();
             RouteLoadGrid();
+
+            RouteSearch.Value = RouteDrp.SelectedItem.ToString();
         }
         #endregion
 
@@ -288,6 +347,121 @@ namespace Route
         }
         #endregion
 
+        #region EnterBtn_Click
+        protected void EnterBtn_Click(object sender, EventArgs e)
+        {
+            EnterBtnRtrModal();
+        }
+
+        public void EnterBtnRtrModal()
+        {
+            try
+            {
+                if (FileUpload_Id.HasFile)
+                {
+                    string fileExtension = Path.GetExtension(FileUpload_Id.FileName);
+                    if (fileExtension == ".xls" || fileExtension == ".xlsx" || fileExtension == ".xlsb")
+                    {
+                        DataTable dtExcel = GetDataFromExcel(FileUpload_Id.FileContent);
+
+                        if (dtExcel != null && dtExcel.Rows.Count > 0)
+                        {
+                            // Get RtrId column from the Excel data
+                            var excelIds = dtExcel.AsEnumerable().Select(row => row["RtrCode"].ToString()).ToHashSet();
+
+                            // Loop through GridView rows
+                            foreach (GridViewRow row in RtrId.Rows)
+                            {
+                                if (row.RowType == DataControlRowType.DataRow)
+                                {
+                                    // Retrieve the RtrCode value from the hidden BoundField
+                                    string gridRtrCode = RtrId.DataKeys[row.RowIndex]["RtrCode"].ToString();
+
+                                    // Find the checkbox in the row
+                                    HtmlInputCheckBox chkBox = (HtmlInputCheckBox)row.FindControl("CheckBox1");
+
+                                    // Check the checkbox if the RtrId matches
+                                    if (chkBox != null && excelIds.Contains(gridRtrCode))
+                                    {
+                                        chkBox.Checked = true;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            showToast("No data found in the Excel file", "toast-danger");
+                        }
+                    }
+                    else
+                    {
+                        showToast("Please select a valid Excel file", "toast-danger");
+                    }
+                }
+                else
+                {
+                    showToast("Please select a file", "toast-danger");
+                }
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+            finally
+            {
+                // Hide the loader at the end
+                //ScriptManager.RegisterStartupScript(this, GetType(), "hideLoader", "hideLoader();", true);
+            }
+        }
+
+        private DataTable GetDataFromExcel(Stream fileStream)
+        {
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            DataTable dt = new DataTable();
+
+            try
+            {
+                using (ExcelPackage package = new ExcelPackage(fileStream))
+                {
+                    // Get the first worksheet in the Excel file
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+
+                    int rowCount = worksheet.Dimension.Rows;
+                    int colCount = worksheet.Dimension.Columns;
+
+                    // Add generic columns to the DataTable
+                    for (int col = 1; col <= colCount; col++)
+                    {
+                        string columnName = "RtrCode";
+                        //if (string.IsNullOrEmpty(columnName))
+                        //{
+                        //    columnName = $"RtrCode";
+                        //}
+                        dt.Columns.Add(columnName);
+                    }
+
+                    // Add rows to the DataTable
+                    for (int row = 1; row <= rowCount; row++) // Read all rows, starting from the first row
+                    {
+                        DataRow dataRow = dt.NewRow();
+                        for (int col = 1; col <= colCount; col++)
+                        {
+                            dataRow[col - 1] = worksheet.Cells[row, col].Text.Trim();
+                        }
+                        dt.Rows.Add(dataRow);
+                    }
+                }
+
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred while reading the Excel file: " + ex.Message, "toast-danger");
+                return null;
+            }
+        }
+        #endregion
+
         #region btnSubmit_Click
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
@@ -400,7 +574,7 @@ namespace Route
                                 return;
                             }
                         }
-                    }           
+                    }
                 }
 
                 showToast("Route Mapped Successfully", "toast-success");
@@ -420,6 +594,9 @@ namespace Route
         public void ClearForm()
         {
             DistDrp.ClearSelection();
+            DistSearch.Value = string.Empty;
+            RouteSearch.Value = string.Empty;
+
             foreach (GridViewRow row in RtrId.Rows)
             {
                 HtmlInputCheckBox chk = (HtmlInputCheckBox)row.FindControl("CheckBox1");
@@ -442,5 +619,7 @@ namespace Route
             ScriptManager.RegisterStartupScript(this, GetType(), "showToast", $"showToast('{message}', '{styleClass}');", true);
         }
         #endregion
+
+
     }
 }

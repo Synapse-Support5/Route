@@ -224,6 +224,9 @@
                         <li class="nav-item">
                             <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">BeatReailgnment</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -254,15 +257,16 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="DistDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="DistDrp_SelectedIndexChanged">
+                        <asp:DropDownList ID="DistDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" onchange="showLoading()" OnSelectedIndexChanged="DistDrp_SelectedIndexChanged">
                             <%--<asp:ListItem Text="Dist. Code" Value=""></asp:ListItem>--%>
                         </asp:DropDownList>
-                        <input type="text" id="DistSearch" class="form-control" placeholder="Search Distributor" />
+                        <input type="text" id="DistSearch" runat="server" class="form-control" placeholder="Enter Distributor" />
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="RouteDrp" runat="server" AutoPostBack="true" class="form-control" OnSelectedIndexChanged="RouteDrp_SelectedIndexChanged">
-                            <asp:ListItem Text="Route" Value=""></asp:ListItem>
+                        <asp:DropDownList ID="RouteDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" onchange="showLoading()" OnSelectedIndexChanged="RouteDrp_SelectedIndexChanged">
+                            <%--<asp:ListItem Text="Route" Value=""></asp:ListItem>--%>
                         </asp:DropDownList>
+                        <input type="text" id="RouteSearch" runat="server" class="form-control" placeholder="Enter Route" />
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
                         <button type="button" class="form-control" id="btnOpenModal" data-toggle="modal" data-target="#exampleModalCenter">
@@ -318,12 +322,14 @@
                                 </button>
                             </div>
                             <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                                <div class="form-group">
-                                    <input type="text" id="txtSearch" class="form-control" placeholder="Search..." />
+                                <div class="form-group d-flex justify-content-center align-items-center">
+                                    <input type="text" id="txtSearch" class="form-control mx-2" placeholder="Search..." style="width: 220px;" />
+                                    <asp:FileUpload ID="FileUpload_Id" runat="server" CssClass="form-control file-upload-input mx-2" accept=".xls, .xlsx, .xlsb" Style="width: 106px; border-top-right-radius: 0; border-bottom-right-radius: 0; margin-right: 2px;" />
+                                    <asp:Button ID="EnterBtn" runat="server" Text="Enter" CssClass="btn btn-primary form-control" OnClientClick="showLoading()" OnClick="EnterBtn_Click" Style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: 0;" />
                                 </div>
                                 <div class="form-group">
                                     <asp:GridView ID="RtrId" runat="server" AutoPostBack="True" CssClass="table table-bordered form-group"
-                                        AutoGenerateColumns="false" DataKeyNames="RtrId" Style="margin-top: 10px; text-align: center"
+                                        AutoGenerateColumns="false" DataKeyNames="RtrId,RtrCode" Style="margin-top: 10px; text-align: center"
                                         OnRowDataBound="RtrId_RowDataBound" ShowHeader="false">
                                         <Columns>
                                             <asp:TemplateField>
@@ -335,6 +341,7 @@
                                             </asp:TemplateField>
                                             <asp:BoundField DataField="RtrNm" />
                                             <asp:BoundField DataField="RtrId" Visible="false" />
+                                            <asp:BoundField DataField="RtrCode" Visible="false" />
                                         </Columns>
                                         <HeaderStyle CssClass="header-hidden" />
                                         <RowStyle CssClass="fixed-height-row" BackColor="#FFFFFF" />
@@ -441,37 +448,71 @@
         };
     </script>
 
-    <%--Script for Dist Dropdown Auto Search--%>
+    <%--Script for Dropdown Auto Search--%>
     <script>
         $(document).ready(function () {
             // Get DropDownList options and convert to an array
             var options = [];
             $('#<%= DistDrp.ClientID %> option').each(function () {
-             var text = $(this).text();  // DistNm
-             var value = $(this).val();  // DistCode
-             if (value) {
-                 options.push({ label: text, value: value });
-             }
-         });
+                var text = $(this).text();  // DistNm
+                var value = $(this).val();  // DistCode
+                if (value) {
+                    options.push({ label: text, value: value });
+                }
+            });
 
-         // Initialize jQuery UI Autocomplete
-         $('#DistSearch').autocomplete({
-             source: options,
-             select: function (event, ui) {
-                 // Set the selected value in the input box (DistNm)
-                 $('#DistSearch').val(ui.item.label);
+            // Initialize jQuery UI Autocomplete
+            $('#DistSearch').autocomplete({
+                source: options,
+                select: function (event, ui) {
+                    // Set the selected value in the input box (DistNm)
+                    $('#DistSearch').val(ui.item.label);
 
-                 // Update the hidden DropDownList (DistDrp) value
-                 $('#<%= DistDrp.ClientID %>').val(ui.item.value);
+                    // Update the hidden DropDownList (DistDrp) value
+                    $('#<%= DistDrp.ClientID %>').val(ui.item.value);
 
-                 // Trigger OnSelectedIndexChanged event of DropDownList
-                 __doPostBack('<%= DistDrp.UniqueID %>', '');
+                    // Trigger OnSelectedIndexChanged event of DropDownList
+                    __doPostBack('<%= DistDrp.UniqueID %>', '');
 
-                 // Return true to avoid clearing the selected value
-                 return true; // Ensures value remains in the input field
-             }
-         });
-     });
+                    showLoading(); 
+
+                    // Return true to avoid clearing the selected value
+                    return true; // Ensures value remains in the input field
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            // Get DropDownList options and convert to an array
+            var options = [];
+            $('#<%= RouteDrp.ClientID %> option').each(function () {
+                var text = $(this).text();  // RouteName
+                var value = $(this).val();  // RouteId
+                if (value) {
+                    options.push({ label: text, value: value });
+                }
+            });
+
+            // Initialize jQuery UI Autocomplete
+            $('#RouteSearch').autocomplete({
+                source: options,
+                select: function (event, ui) {
+                    // Set the selected value in the input box (RouteName)
+                    $('#RouteSearch').val(ui.item.label);
+
+                    // Update the hidden DropDownList (RouteDrp) value
+                    $('#<%= RouteDrp.ClientID %>').val(ui.item.value);
+
+                    // Trigger OnSelectedIndexChanged event of DropDownList
+                    __doPostBack('<%= RouteDrp.UniqueID %>', '');
+
+                    showLoading();
+
+                    // Return true to avoid clearing the selected value
+                    return true; // Ensures value remains in the input field
+                }
+            });
+        });
     </script>
 </body>
 </html>

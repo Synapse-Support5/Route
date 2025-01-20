@@ -51,36 +51,88 @@ namespace Route
         {
             try
             {
-                Session["name"] = "G116036";
-                //Session["name"] = Request.ServerVariables["REMOTE_USER"].Substring(6);
+                //Session["name"] = "G116036";
+                ////Session["name"] = Request.ServerVariables["REMOTE_USER"].Substring(6);
 
-                if (Session["name"].ToString() != "")
+                //if (Session["name"].ToString() != "")
+                //{
+                //    if (con.State == ConnectionState.Closed)
+                //    {
+                //        con.Open();
+                //    }
+                //    SqlCommand cmd1 = new SqlCommand("SP_Route_Create_Dropdowns", con);
+                //    cmd1.CommandType = CommandType.StoredProcedure;
+                //    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                //    cmd1.Parameters.AddWithValue("@ActionType", "Session");
+
+                //    cmd1.CommandTimeout = 6000;
+                //    SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                //    da.Fill(resdt);
+
+                //    if (resdt.Rows.Count > 0)
+                //    {
+                //        //lblUserName.Text = "User Name > " + resdt.Rows[0][0].ToString() + ": User ID > " + Session["name"].ToString();
+                //        lblUserName.Text = "Welcome : " + resdt.Rows[0][0].ToString();
+                //        hdnBusinessType.Value = resdt.Rows[0][2].ToString();
+                //        hdnRole.Value = resdt.Rows[0][3].ToString();
+                //    }
+                //    else
+                //    {
+                //        Response.Redirect("AccessDeniedPage.aspx");
+                //    }
+                //    con.Close();
+                //}
+                //else
+                //{
+                //    Response.Redirect("AccessDeniedPage.aspx");
+                //}
+
+                string remoteUser = "G116036";
+                //string remoteUser = Request.ServerVariables["REMOTE_USER"];
+
+                if (!string.IsNullOrEmpty(remoteUser))
                 {
-                    if (con.State == ConnectionState.Closed)
+                    if (remoteUser == Request.ServerVariables["REMOTE_USER"])
                     {
-                        con.Open();
+                        Session["name"] = remoteUser.Substring(6);
                     }
-                    SqlCommand cmd1 = new SqlCommand("SP_Route_Create_Dropdowns", con);
-                    cmd1.CommandType = CommandType.StoredProcedure;
-                    cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
-                    cmd1.Parameters.AddWithValue("@ActionType", "Session");
-
-                    cmd1.CommandTimeout = 6000;
-                    SqlDataAdapter da = new SqlDataAdapter(cmd1);
-                    da.Fill(resdt);
-
-                    if (resdt.Rows.Count > 0)
+                    else
                     {
-                        //lblUserName.Text = "User Name > " + resdt.Rows[0][0].ToString() + ": User ID > " + Session["name"].ToString();
-                        lblUserName.Text = "Welcome : " + resdt.Rows[0][0].ToString();
-                        hdnBusinessType.Value = resdt.Rows[0][2].ToString();
-                        hdnRole.Value = resdt.Rows[0][3].ToString();
+                        Session["name"] = remoteUser;
+                    }
+
+                    if (!string.IsNullOrEmpty(Session["name"]?.ToString()))
+                    {
+                        if (con.State == ConnectionState.Closed)
+                        {
+                            con.Open();
+                        }
+                        SqlCommand cmd1 = new SqlCommand("SP_Route_Create_Dropdowns", con);
+                        cmd1.CommandType = CommandType.StoredProcedure;
+                        cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                        cmd1.Parameters.AddWithValue("@ActionType", "Session");
+
+                        cmd1.CommandTimeout = 6000;
+                        SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                        da.Fill(resdt);
+
+                        if (resdt.Rows.Count > 0)
+                        {
+                            //lblUserName.Text = "User Name > " + resdt.Rows[0][0].ToString() + ": User ID > " + Session["name"].ToString();
+                            lblUserName.Text = "Welcome : " + resdt.Rows[0][0].ToString();
+                            hdnBusinessType.Value = resdt.Rows[0][2].ToString();
+                            hdnRole.Value = resdt.Rows[0][3].ToString();
+                        }
+                        else
+                        {
+                            Response.Redirect("AccessDeniedPage.aspx");
+                        }
+                        con.Close();
                     }
                     else
                     {
                         Response.Redirect("AccessDeniedPage.aspx");
                     }
-                    con.Close();
                 }
                 else
                 {
@@ -105,6 +157,8 @@ namespace Route
             }
 
             MnfIdLoad();
+
+            DistSearch.Value = DistDrp.SelectedItem.ToString();
         }
 
         protected void MnfIdDrp_SelectedIndexChanged(object sender, EventArgs e)
@@ -520,6 +574,7 @@ namespace Route
         private void ClearForm()
         {
             DistDrp.ClearSelection();
+            DistSearch.Value = string.Empty;
             MnfId.ClearSelection();
             RtCode.Text = string.Empty;
             RtName.Text = string.Empty;
