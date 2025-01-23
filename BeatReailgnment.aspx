@@ -175,6 +175,38 @@
         .ui-helper-hidden-accessible {
             display: none;
         }
+
+        /*modal stylings*/
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Adds space between items */
+        }
+
+            .modal-header .form-control {
+                margin: 0; /* Reset any extra margin */
+            }
+
+            .modal-header input.form-control {
+                width: 50%; /* Search box width */
+            }
+
+            .modal-header .form-control.d-flex {
+                width: 30%; /* Radio button div width */
+            }
+
+            .modal-header .btn {
+                width: 20%; /* Fetch button width */
+            }
+
+        .radio-option input[type="radio"] {
+            /*vertical-align: middle;*/ /* Aligns the radio button with text */
+            margin-right: 2px; /* Adds space between button and text */
+        }
+
+        .fetch-btn {
+            width: 20% !important;
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -277,6 +309,19 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
+                    </div>
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                    </div>
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                    </div>
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <button type="button" class="form-control" id="btnOpenModal" runat="server" data-toggle="modal" data-target="#exampleModalCenter">
+                            Search...
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
                         <asp:DropDownList ID="DistDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="DistDrp_SelectedIndexChanged">
                         </asp:DropDownList>
                         <input type="text" id="DistSearch" runat="server" class="form-control" placeholder="Enter Distributor" />
@@ -315,7 +360,7 @@
                 </div>
             </div>
 
-            <div class="row mt-3">
+            <div class="row">
                 <div class="col-12">
                     <div class="grid-wrapper">
                         <asp:GridView ID="FromRouteLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
@@ -345,7 +390,7 @@
                 </div>
             </div>
 
-            <div class="row mt-3">
+            <div class="row">
                 <div class="col-12">
                     <div class="grid-wrapper">
                         <asp:GridView ID="ToRouteLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
@@ -375,11 +420,62 @@
                 </div>
             </div>
 
+            <%-- Modal for Search button --%>
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header d-flex align-items-center">
+                            <asp:TextBox ID="SearchTxt" runat="server" placeholder="Search..." CssClass="form-control mr-3" Style="width: 70%;" />
+
+                            <div class="form-control d-flex align-items-center justify-content-center mr-3" style="width: 30%;">
+                                <asp:RadioButton ID="rbActive" runat="server" GroupName="Status" Text="Active" CssClass="radio-option mr-3" Style="margin-top: 8px;" />
+                                <asp:RadioButton ID="rbInactive" runat="server" GroupName="Status" Text="InActive" CssClass="radio-option" Style="margin-top: 8px;" />
+                            </div>
+                            <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+                            <asp:UpdatePanel ID="UpdatePanelFetch" runat="server" UpdateMode="Conditional">
+                                <ContentTemplate>
+                                    <asp:Button ID="btnFetch" runat="server" CssClass="btn btn-primary" Text="      Fetch      " OnClick="btnFetch_Click" Style="width: 100%;" />
+                                </ContentTemplate>
+                            </asp:UpdatePanel>
+                        </div>
+
+
+                        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                            <div class="form-group">
+                                <asp:UpdatePanel ID="UpdatePanelGrid" runat="server" UpdateMode="Conditional">
+                                    <ContentTemplate>
+                                        <asp:GridView ID="SearchModalGrid" runat="server" AutoPostBack="True" CssClass="table table-bordered form-group"
+                                            AutoGenerateColumns="false" DataKeyNames="" Style="margin-bottom: -18px; text-align: center">
+                                            <Columns>
+                                                <asp:BoundField DataField="Distcode" HeaderText="Dist. Code" />
+                                                <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
+                                                <asp:BoundField DataField="RtrCode" HeaderText="Rtr Code" />
+                                                <asp:BoundField DataField="UrCode" HeaderText="UrCode" />
+                                                <asp:BoundField DataField="Status" HeaderText="Status" />
+
+                                            </Columns>
+                                            <HeaderStyle CssClass="header-hidden" />
+                                            <RowStyle CssClass="fixed-height-row" BackColor="#FFFFFF" />
+                                        </asp:GridView>
+                                    </ContentTemplate>
+                                </asp:UpdatePanel>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <%--<button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>--%>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <%-- Notification Label --%>
             <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;"></div>
             <asp:HiddenField ID="hdnBusinessType" runat="server" />
             <asp:HiddenField ID="hdnRole" runat="server" />
         </div>
+
     </form>
 
 

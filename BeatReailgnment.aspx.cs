@@ -53,7 +53,7 @@ namespace Route
                         {
                             con.Open();
                         }
-                        SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment_Dropdowns", con);
+                        SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment", con);
                         cmd1.CommandType = CommandType.StoredProcedure;
                         cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                         cmd1.Parameters.AddWithValue("@ActionType", "Session");
@@ -62,6 +62,8 @@ namespace Route
                         cmd1.Parameters.AddWithValue("@ToRouteId", "");
                         cmd1.Parameters.AddWithValue("@FromRtrCode", "");
                         cmd1.Parameters.AddWithValue("@FromUrCode", "");
+                        cmd1.Parameters.AddWithValue("@Search", "");
+                        cmd1.Parameters.AddWithValue("@Status", "");
 
                         cmd1.CommandTimeout = 6000;
                         SqlDataAdapter da = new SqlDataAdapter(cmd1);
@@ -158,7 +160,7 @@ namespace Route
                 {
                     con.Open();
                 }
-                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment_Dropdowns", con);
+                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment", con);
                 cmd1.CommandType = CommandType.StoredProcedure;
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "DistLoad");
@@ -167,6 +169,8 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@ToRouteId", "");
                 cmd1.Parameters.AddWithValue("@FromRtrCode", "");
                 cmd1.Parameters.AddWithValue("@FromUrCode", "");
+                cmd1.Parameters.AddWithValue("@Search", "");
+                cmd1.Parameters.AddWithValue("@Status", "");
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -197,7 +201,7 @@ namespace Route
                 {
                     con.Open();
                 }
-                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment_Dropdowns", con);
+                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment", con);
                 cmd1.CommandType = CommandType.StoredProcedure;
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "DistLoadGrid");
@@ -206,6 +210,8 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@ToRouteId", "");
                 cmd1.Parameters.AddWithValue("@FromRtrCode", "");
                 cmd1.Parameters.AddWithValue("@FromUrCode", "");
+                cmd1.Parameters.AddWithValue("@Search", "");
+                cmd1.Parameters.AddWithValue("@Status", "");
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -233,7 +239,7 @@ namespace Route
                 {
                     con.Open();
                 }
-                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment_Dropdowns", con);
+                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment", con);
                 cmd1.CommandType = CommandType.StoredProcedure;
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "FromRouteLoad");
@@ -242,6 +248,8 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@ToRouteId", "");
                 cmd1.Parameters.AddWithValue("@FromRtrCode", "");
                 cmd1.Parameters.AddWithValue("@FromUrCode", "");
+                cmd1.Parameters.AddWithValue("@Search", "");
+                cmd1.Parameters.AddWithValue("@Status", "");
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -272,7 +280,7 @@ namespace Route
                 {
                     con.Open();
                 }
-                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment_Dropdowns", con);
+                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment", con);
                 cmd1.CommandType = CommandType.StoredProcedure;
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "FromRouteLoadGrid");
@@ -281,6 +289,8 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@ToRouteId", "");
                 cmd1.Parameters.AddWithValue("@FromRtrCode", "");
                 cmd1.Parameters.AddWithValue("@FromUrCode", "");
+                cmd1.Parameters.AddWithValue("@Search", "");
+                cmd1.Parameters.AddWithValue("@Status", "");
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -308,7 +318,7 @@ namespace Route
                 {
                     con.Open();
                 }
-                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment_Dropdowns", con);
+                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment", con);
                 cmd1.CommandType = CommandType.StoredProcedure;
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "ToRouteLoad");
@@ -317,6 +327,8 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@ToRouteId", "");
                 cmd1.Parameters.AddWithValue("@FromRtrCode", "");
                 cmd1.Parameters.AddWithValue("@FromUrCode", "");
+                cmd1.Parameters.AddWithValue("@Search", "");
+                cmd1.Parameters.AddWithValue("@Status", "");
 
                 cmd1.ExecuteNonQuery();
 
@@ -348,7 +360,7 @@ namespace Route
                 {
                     con.Open();
                 }
-                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment_Dropdowns", con);
+                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment", con);
                 cmd1.CommandType = CommandType.StoredProcedure;
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "ToRouteLoadGrid");
@@ -357,6 +369,8 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@ToRouteId", ToRouteDrp.SelectedValue);
                 cmd1.Parameters.AddWithValue("@FromRtrCode", "");
                 cmd1.Parameters.AddWithValue("@FromUrCode", "");
+                cmd1.Parameters.AddWithValue("@Search", "");
+                cmd1.Parameters.AddWithValue("@Status", "");
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -424,7 +438,7 @@ namespace Route
                         string rtr = row.Cells[2].Text;
                         string urCode = row.Cells[4].Text;
 
-                        SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment_Dropdowns", con);
+                        SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment", con);
                         cmd1.CommandType = CommandType.StoredProcedure;
                         cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                         cmd1.Parameters.AddWithValue("@ActionType", "SubmitClick");
@@ -433,6 +447,8 @@ namespace Route
                         cmd1.Parameters.AddWithValue("@ToRouteId", ToRouteDrp.SelectedValue);
                         cmd1.Parameters.AddWithValue("@FromRtrCode", rtr);
                         cmd1.Parameters.AddWithValue("@FromUrCode", urCode);
+                        cmd1.Parameters.AddWithValue("@Search", "");
+                        cmd1.Parameters.AddWithValue("@Status", "");
 
                         cmd1.ExecuteNonQuery();
 
@@ -445,6 +461,72 @@ namespace Route
                 con.Close();
 
                 ClearForm();
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+        #endregion
+
+        #region btnFetch_Click
+        protected void btnFetch_Click(object sender, EventArgs e)
+        {
+            Fetch();
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "updatePanels", "$('#UpdatePanelGrid').trigger('change');", true);
+            UpdatePanelFetch.Update();
+            UpdatePanelGrid.Update();
+        }
+        
+        protected void Fetch()
+        {
+            try
+            {
+                string status = "";
+                if (rbActive.Checked)
+                {
+                    status = "1";
+                }
+                else if (rbInactive.Checked)
+                {
+                    status = "0";
+                }
+                else if (SearchTxt.Text == "" && status == "")
+                {
+                    showToast("Please select atleast Active/InActive option to fetch data", "toast-danger");
+                    return;
+                }
+                else
+                {
+                    showToast("Please select Active/InActive option", "toast-danger");
+                    return;
+                }
+
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                }
+                SqlCommand cmd1 = new SqlCommand("SP_Route_BeatReailgnment", con);
+                cmd1.CommandType = CommandType.StoredProcedure;
+                cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                cmd1.Parameters.AddWithValue("@ActionType", "FetchClick");
+                cmd1.Parameters.AddWithValue("@DistCode", "");
+                cmd1.Parameters.AddWithValue("@FromRouteId", "");
+                cmd1.Parameters.AddWithValue("@ToRouteId", "");
+                cmd1.Parameters.AddWithValue("@FromRtrCode", "");
+                cmd1.Parameters.AddWithValue("@FromUrCode", "");
+                cmd1.Parameters.AddWithValue("@Search", SearchTxt.Text);
+                cmd1.Parameters.AddWithValue("@Status", status);
+                cmd1.ExecuteNonQuery();
+
+                cmd1.CommandTimeout = 6000;
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                resdt.Rows.Clear();
+                da.Fill(resdt);
+                SearchModalGrid.DataSource = resdt;
+                SearchModalGrid.DataBind();
+                con.Close();
             }
             catch (Exception ex)
             {
@@ -490,6 +572,7 @@ namespace Route
             ToRouteSearch.Value = string.Empty;
         }
         #endregion
+
 
     }
 }
