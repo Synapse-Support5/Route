@@ -90,8 +90,8 @@ namespace Route
                 //    Response.Redirect("AccessDeniedPage.aspx");
                 //}
 
-                string remoteUser = "G116036";
-                //string remoteUser = Request.ServerVariables["REMOTE_USER"];
+                //string remoteUser = "G116036";
+                string remoteUser = Request.ServerVariables["REMOTE_USER"];
 
                 if (!string.IsNullOrEmpty(remoteUser))
                 {
