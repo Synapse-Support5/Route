@@ -1,13 +1,14 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="NewGeo.aspx.cs" Inherits="Route.NewGeo" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="SOBeatCreation.aspx.cs" Inherits="Route.SOBeatCreation" %>
 
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>New Geo</title>
+    <title>SO Beat Creation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="Content/bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
@@ -74,60 +75,6 @@
             overflow: auto;
         }
 
-        /* Spinner styles */
-        .spinner {
-            width: 30px;
-            height: 30px;
-            border: 4px solid #ddd;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: auto;
-            margin-left: 0px;
-            margin-top: 5px;
-            display: none; /* Hidden by default */
-        }
-
-        /* Keyframes for spinner animation */
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Style for the file upload container */
-        .file-upload-container {
-            position: relative;
-        }
-
-        /* Style for the file input button */
-        .file-upload-input {
-            padding-right: 50px; /* Space for the image */
-        }
-
-        /* Style for the link that contains the image */
-        .file-upload-link {
-            position: absolute;
-            top: 50%;
-            right: 0px; /* Adjust position of the icon */
-            transform: translateY(-50%);
-            background-color: #e6e6e6; /* Same as the button color */
-            border-radius: 3px;
-            padding: 5px;
-            display: inline-block;
-        }
-
-        /* Style for the Excel image */
-        .file-upload-icon {
-            width: 25px; /* Adjust the size of the image */
-            height: 25px;
-            background-color: transparent; /* Keep the background transparent */
-        }
-
         /* Container for the progress bar */
         .progress-bar-container {
             width: 100%; /* Makes the container take up the full width */
@@ -170,12 +117,44 @@
                 max-width: 100%; /* Ensures the progress bar can stretch to the screen size */
             }
         }
+
+        /* Style the autocomplete dropdown to look like a DropDownList */
+        .ui-autocomplete {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1050;
+            width: 50px; /* Match the width of the input field */
+        }
+
+        .ui-menu-item {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+            .ui-menu-item:hover {
+                background-color: #007bff;
+                color: white;
+            }
+
+        /* Hide any default message shown by jQuery UI */
+        .ui-helper-hidden-accessible {
+            display: none;
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
         function showToast(message, styleClass) {
             var toast = $('<div class="toast-custom ' + styleClass + '">' + message + '</div>').appendTo('#toastContainer');
@@ -201,24 +180,6 @@
                 });
             }, 3000);
         }
-
-        function showNoteAlert() {
-            $('#noteAlert').show();
-        }
-
-        function hideNoteAlert() {
-            $('#noteAlert').hide();
-        }
-
-        //function showLoader() {
-        //    document.getElementById('spinner').style.display = 'block';
-        //}
-
-        //// Function to hide loader
-        //function hideLoader() {
-        //    document.getElementById('spinner').style.display = 'none';
-        //}
-
     </script>
 </head>
 <body>
@@ -259,6 +220,7 @@
         </nav>
 
         <hr />
+
         <%--progress bar--%>
         <div id="loadingOverlay" style="display: none; z-index: 9999;">
             <div class="progress-bar-container">
@@ -277,108 +239,50 @@
                     </td>
                 </tr>
             </table>
-            <h2 style="text-align: center; margin-top: 20px;">New Geo</h2>
+            <h2 style="text-align: center; margin-top: 20px;">SO Beat Creation</h2>
             <br />
 
             <div class="container">
-                <div class="row justify-content-center">
+                <div class="row">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:TextBox ID="DistCodeTxt" runat="server" CssClass="form-control" placeholder="Dist. Code"></asp:TextBox>
+                        <asp:DropDownList ID="ZoneDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="ZoneDrp_SelectedIndexChanged">
+                        </asp:DropDownList>
                     </div>
-                    <div id="btnDivSingle" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="true">
-                        <asp:Button ID="EnterSubmit" runat="server" Text="Enter" CssClass="btn btn-primary form-control"
-                            OnClientClick="showLoading()" OnClick="BtnEnter_Click" />
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <asp:DropDownList ID="SODrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="SODrp_SelectedIndexChanged">
+                            <asp:ListItem Text="SO Code" Value=""></asp:ListItem>
+                        </asp:DropDownList>
                     </div>
-                    <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
-                        <div class="file-upload-container position-relative">
-                            <asp:FileUpload ID="FileUpload_Id" runat="server" CssClass="form-control file-upload-input" accept=".xls, .xlsx, .xlsb" />
-                            <a href="Excel/Sample.xlsx" download="Sample" class="file-upload-link" title="Download Sample Excel Template">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png?20190925171014" alt="Excel Logo" class="file-upload-icon" /></a>
-                        </div>
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <asp:Button ID="Submit" runat="server" Text="Create" CssClass="btn btn-success form-control" OnClientClick="showLoading()" />
                     </div>
-                    <div id="btnDivSplit2" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
-                        <asp:Button ID="SubmitBtn" runat="server" Text="Submit" CssClass="btn btn-info form-control" OnClientClick="showLoading()" OnClick="Submit_Click" />
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
                     </div>
-                    <%--<div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <div id="spinner" class="spinner"></div>
-                    </div>--%>
                 </div>
-            </div>
 
-            <%-- Note --%>
-            <div class="container">
                 <div class="row mt-3">
-                    <div class="alert alert-success" role="alert" id="noteAlert" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h4 class="alert-heading">Note</h4>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <%--<span aria-hidden="true">&times;</span>--%>
-                            </button>
+                    <div class="col-12">
+                        <div class="grid-wrapper">
+                            <asp:GridView ID="DistRtrLoadGrid2" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                                Style="margin-bottom: 0px; text-align: center;">
+                                <Columns>
+                                    <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
+                                    <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
+                                    <asp:BoundField DataField="URCode" HeaderText="UR Code" />
+
+                                    <asp:TemplateField>
+                                        <ItemTemplate>
+                                            <div style="margin-right: 10px;">
+                                                <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input" style="position: relative; margin-left: -3px;" checked="checked" disabled="disabled" />
+                                            </div>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                </Columns>
+                            </asp:GridView>
                         </div>
-                        <hr />
-                        <p class="mb-0">
-                            Some of the 'OUTLET CLASSIFICATION 1' will be replaced with the marked 'ExistingData'. 
-                            Click 
-                            <asp:Button ID="btnContinue" runat="server" Text="Continue" CssClass="btn btn-success form-control" Width="100px" OnClientClick="showLoading()" OnClick="btnContinue_Click" />
-                            to proceed.
-                        </p>
                     </div>
                 </div>
             </div>
-
-            <%-- GridView --%>
-            <div class="row">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;" OnRowDataBound="GridView1_RowDataBound">
-                            <Columns>
-                                <asp:BoundField DataField="RETAILERCODE" HeaderText="RETAILER CODE" />
-                                <asp:BoundField DataField="RETAILER NAME" HeaderText="RETAILER NAME" />
-                                <asp:BoundField DataField="ROUTE CODE" HeaderText="ROUTE CODE" />
-                                <asp:BoundField DataField="ROUTE NAME" HeaderText="ROUTE NAME" />
-                                <asp:BoundField DataField="OUTLET CLASSIFICATION 2" HeaderText="OUTLET CLASSIFICATION 2" />
-                                <asp:BoundField DataField="OUTLET CLASSIFICATION 3" HeaderText="OUTLET CLASSIFICATION 3" />
-                                <asp:BoundField DataField="OUTLET CLASSIFICATION 1" HeaderText="OUTLET CLASSIFICATION 1" />
-                                <asp:BoundField DataField="ExistingData" HeaderText="ExistingData" />
-
-                                <asp:BoundField DataField="MatchStatus" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="RETAILER ADD1" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="RETAILER ADD2" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="RETAILER ADD3" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="PHONEOFF" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="TAXTYPE" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="RETAILER GSTTIN" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="COMPANYCODE" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="VANNONVAN" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="FREQUENCY" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="MARKET CODE" HeaderText="MatchStatus" Visible="false" />
-
-                            </Columns>
-                        </asp:GridView>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="SSMExistGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;">
-                            <Columns>
-                                <asp:BoundField DataField="SSM CODE" HeaderText="SSM CODE" />
-                                <asp:BoundField DataField="SSM NAME" HeaderText="SSM NAME" />
-                            </Columns>
-                        </asp:GridView>
-                    </div>
-                </div>
-            </div>
-
-
-
-
-            <%--<asp:Button ID="btnContinue" runat="server" Text="Continue" OnClick="btnContinue_Click" />--%>
-
 
             <%-- Notification Label --%>
             <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;"></div>
@@ -387,18 +291,51 @@
         </div>
     </form>
 
-    <%-- Script for Loading --%>
-    <%--<script>
-        $('#<%= SubmitBtn.ClientID %>').click(function () {
-            showLoader();
-        });
+    <%-- Script for selectall checkboxes in Modal --%>
+    <script type="text/javascript">
+        function selectAllCheckboxes(source) {
+            var checkboxes = document.querySelectorAll('.rowCheckbox');
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    </script>
 
-        $('#<%= btnContinue.ClientID %>').click(function () {
-            showLoader();
+    <%-- Script for search button in Modal --%>
+    <%-- <script type="text/javascript">
+        $(document).ready(function () {
+            $("#txtSearch").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#<%= DayId.ClientID %> tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
         });
     </script>--%>
 
-    <%--scri[pt for progressbar--%>
+    <%--Script to allow only alphanumeric characters, space, and underscore --%>
+    <script type="text/javascript">
+        // Function to allow only alphanumeric characters, space, and underscore
+        function isValidInput(event) {
+            var charCode = event.which || event.keyCode;
+            var charStr = String.fromCharCode(charCode);
+
+            // Allow backspace, delete, tab, escape, enter, space, underscore, and alphanumerics
+            if (charCode === 8 || charCode === 9 || charCode === 13 || charCode === 27 ||
+                charCode === 32 || charStr === "_" || /^[a-zA-Z0-9]$/.test(charStr)) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Function to remove any invalid characters if pasted into the textbox
+        function removeInvalidChars(input) {
+            input.value = input.value.replace(/[^a-zA-Z0-9 _]/g, '');
+        }
+    </script>
+
+    <%--script for progressbar--%>
     <script>
         function showLoading() {
             document.getElementById('loadingOverlay').style.display = 'block';
@@ -409,6 +346,39 @@
         };
     </script>
 
+    <%--Script for Dist Dropdown Auto Search--%>
+    <%--<script>
+        $(document).ready(function () {
+            // Get DropDownList options and convert to an array
+            var options = [];
+            $('#<%= DistDrp.ClientID %> option').each(function () {
+                var text = $(this).text();  // DistNm
+                var value = $(this).val();  // DistCode
+                if (value) {
+                    options.push({ label: text, value: value });
+                }
+            });
+
+            // Initialize jQuery UI Autocomplete
+            $('#DistSearch').autocomplete({
+                source: options,
+                select: function (event, ui) {
+                    // Set the selected value in the input box (DistNm)
+                    $('#DistSearch').val(ui.item.label);
+
+                    // Update the hidden DropDownList (DistDrp) value
+                    $('#<%= DistDrp.ClientID %>').val(ui.item.value);
+
+                    // Trigger OnSelectedIndexChanged event of DropDownList
+                    __doPostBack('<%= DistDrp.UniqueID %>', '');
+
+                    showLoading();
+
+                    // Return true to avoid clearing the selected value
+                    return true; // Ensures value remains in the input field
+                }
+            });
+        });
+    </script>--%>
 </body>
 </html>
-

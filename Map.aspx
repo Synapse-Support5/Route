@@ -227,6 +227,9 @@
                         <li class="nav-item">
                             <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">BeatReailgnment</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SOBeatCreation</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -474,7 +477,7 @@
                     // Trigger OnSelectedIndexChanged event of DropDownList
                     __doPostBack('<%= DistDrp.UniqueID %>', '');
 
-                    showLoading(); 
+                    showLoading();
 
                     // Return true to avoid clearing the selected value
                     return true; // Ensures value remains in the input field

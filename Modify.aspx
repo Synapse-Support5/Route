@@ -115,6 +115,9 @@
                         <li class="nav-item">
                             <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">BeatReailgnment</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SOBeatCreation</a>
+                        </li>
                     </ul>
                 </div>
             </div>
