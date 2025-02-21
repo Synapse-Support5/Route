@@ -208,14 +208,7 @@ namespace Route
         }
         #endregion
 
-
-
-        #region ToastNotification
-        private void showToast(string message, string styleClass)
-        {
-            ScriptManager.RegisterStartupScript(this, GetType(), "showToast", $"showToast('{message}', '{styleClass}');", true);
-        }
-        #endregion
+        #region SelectedIndexChanged
 
         protected void ZoneDrp_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -226,7 +219,9 @@ namespace Route
         {
             DistRtrLoadGrid();
         }
+        #endregion
 
+        #region Submit_Click
         protected void Submit_Click(object sender, EventArgs e)
         {
             try
@@ -282,7 +277,7 @@ namespace Route
 
                 da.Fill(dsSo);
 
-                if (dsSo.Tables.Count > 0)
+                if (dsSo.Tables[1].Rows.Count > 0)
                 {
                     // Example: Binding DataTable to a GridView for display
                     ResultModalGrid.DataSource = dsSo.Tables[1];
@@ -306,6 +301,14 @@ namespace Route
                 showToast("An error occurred: " + ex.Message, "toast-danger");
             }
         }
+        #endregion
+
+        #region ToastNotification
+        private void showToast(string message, string styleClass)
+        {
+            ScriptManager.RegisterStartupScript(this, GetType(), "showToast", $"showToast('{message}', '{styleClass}');", true);
+        }
+        #endregion
 
         #region ClearForm
         public void ClearForm()
