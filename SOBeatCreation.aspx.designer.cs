@@ -96,6 +96,15 @@ namespace Route
         protected global::System.Web.UI.WebControls.Button Submit;
 
         /// <summary>
+        /// Button1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlButton Button1;
+
+        /// <summary>
         /// DistRtrLoadGrid2 control.
         /// </summary>
         /// <remarks>
@@ -103,6 +112,15 @@ namespace Route
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView DistRtrLoadGrid2;
+
+        /// <summary>
+        /// ResultModalGrid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView ResultModalGrid;
 
         /// <summary>
         /// hdnBusinessType control.

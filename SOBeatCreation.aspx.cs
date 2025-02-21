@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Web.UI.HtmlControls;
 
 namespace Route
 {
@@ -225,5 +226,105 @@ namespace Route
         {
             DistRtrLoadGrid();
         }
+
+        protected void Submit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DataTable Dists = new DataTable();
+                Dists.Columns.Add("DistCode", typeof(string));
+
+                HashSet<string> uniqueDistCodes = new HashSet<string>();
+
+                // Iterate through GridView rows
+                foreach (GridViewRow row in DistRtrLoadGrid2.Rows)
+                {
+                    // Find the checkbox control
+                    HtmlInputCheckBox chk = (HtmlInputCheckBox)row.FindControl("CheckBox1");
+
+                    if (chk != null && chk.Checked)
+                    {
+                        // Get the DistCode from the row
+                        string distCode = row.Cells[0].Text.Trim();
+
+                        // Add to HashSet to remove duplicates
+                        if (!string.IsNullOrEmpty(distCode))
+                        {
+                            uniqueDistCodes.Add(distCode);
+                        }
+                    }
+                }
+
+                // Convert HashSet to DataTable
+                foreach (string code in uniqueDistCodes)
+                {
+                    Dists.Rows.Add(code);
+                }
+
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                }
+
+                SqlCommand cmd1 = new SqlCommand("SP_Route_SOBeatCreation_NewLogic", con);
+                cmd1.CommandType = CommandType.StoredProcedure;
+                cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                cmd1.Parameters.AddWithValue("@SOBeatDistcodeTable", Dists);
+                cmd1.Parameters.AddWithValue("@SOCode", SODrp.SelectedValue);
+                cmd1.Parameters.AddWithValue("@ZoneName", ZoneDrp.SelectedValue);
+                cmd1.CommandTimeout = 6000;
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd1);
+
+                //DataTable dtSo = new DataTable();
+                DataSet dsSo = new DataSet();
+                //da.Fill(dtSo);
+
+                da.Fill(dsSo);
+
+                if (dsSo.Tables.Count > 0)
+                {
+                    // Example: Binding DataTable to a GridView for display
+                    ResultModalGrid.DataSource = dsSo.Tables[1];
+                    ResultModalGrid.DataBind();
+
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ClickButton", "$('#Button1').click();", true);
+
+                    showToast("Some of the records uploaded", "toast-success");
+                }
+                else
+                {
+                    showToast("All records uploaded", "toast-success");
+                }
+
+                con.Close();
+
+                ClearForm();
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
+        }
+
+        #region ClearForm
+        public void ClearForm()
+        {
+            ZoneDrp.ClearSelection();
+            SODrp.ClearSelection();
+
+            DistRtrLoadGrid2.DataSource = null;
+            DistRtrLoadGrid2.DataBind();
+
+            foreach (GridViewRow row in DistRtrLoadGrid2.Rows)
+            {
+                HtmlInputCheckBox chk = (HtmlInputCheckBox)row.FindControl("CheckBox1");
+                if (chk != null)
+                {
+                    chk.Checked = false;
+                }
+            }
+        }
+        #endregion
     }
 }

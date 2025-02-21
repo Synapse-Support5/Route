@@ -243,7 +243,7 @@
             <br />
 
             <div class="container">
-                <div class="row">
+                <div class="row justify-content-center">
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
                         <asp:DropDownList ID="ZoneDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="ZoneDrp_SelectedIndexChanged">
                         </asp:DropDownList>
@@ -254,10 +254,14 @@
                         </asp:DropDownList>
                     </div>
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:Button ID="Submit" runat="server" Text="Create" CssClass="btn btn-success form-control" OnClientClick="showLoading()" />
+                        <asp:Button ID="Submit" runat="server" Text="Create" CssClass="btn btn-success form-control" OnClientClick="showLoading()" OnClick="Submit_Click" />
                     </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                    </div>
+
+                </div>
+                <div class="col-12 col-md-3 mb-2 mb-md-0">
+                    <button type="button" class="form-control" id="Button1" runat="server" data-toggle="modal" data-target="#resultModalCenter" style="display: none;">
+                        Modal                       
+                    </button>
                 </div>
 
                 <div class="row mt-3">
@@ -279,6 +283,43 @@
                                     </asp:TemplateField>
                                 </Columns>
                             </asp:GridView>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%-- Modal for Result --%>
+            <div class="modal fade" id="resultModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="resultModalLongTitle">Uploadation failed data</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                            <div class="form-group">
+                                <asp:GridView ID="ResultModalGrid" runat="server" AutoPostBack="True" CssClass="table table-bordered form-group"
+                                    AutoGenerateColumns="false" DataKeyNames="" Style="margin-bottom: -18px; text-align: center">
+                                    <Columns>
+                                        <asp:BoundField DataField="Distcode" HeaderText="Dist. Code" />
+                                        <asp:BoundField DataField="RouteCode" HeaderText="Route Code" />
+                                        <asp:BoundField DataField="RouteName" HeaderText="Route Name" />
+                                        <asp:BoundField DataField="UniqueRouteCode" HeaderText="UniqueRouteCode" />
+                                        <asp:BoundField DataField="Remarks" HeaderText="Remarks" />
+
+                                    </Columns>
+                                    <HeaderStyle CssClass="header-hidden" />
+                                    <RowStyle CssClass="fixed-height-row" BackColor="#FFFFFF" />
+                                </asp:GridView>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <%--<button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>--%>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>

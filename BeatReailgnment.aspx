@@ -407,12 +407,12 @@
 
                                 <asp:TemplateField HeaderText="Select All">
                                     <HeaderTemplate>
-                                        <div style="margin-right: 10px;">
+                                        <div style="margin-right: 10px; position: relative;">
                                             <input type="checkbox" id="parentCheckbox" style="margin-left: -3px;" class="form-check-input" />
                                         </div>
                                     </HeaderTemplate>
                                     <ItemTemplate>
-                                        <div style="margin-right: 10px;">
+                                        <div style="margin-right: 10px; position: relative;">
                                             <input type="checkbox" id="CheckBox1" runat="server" class="child-checkbox form-check-input rowCheckbox" style="margin-left: -3px;" />
                                         </div>
                                     </ItemTemplate>
