@@ -198,7 +198,7 @@
         </div>
     </form>
 
-    <%--scri[pt for progressbar--%>
+    <%--script for progressbar--%>
     <script>
         function showLoading() {
             document.getElementById('loadingOverlay').style.display = 'block';
