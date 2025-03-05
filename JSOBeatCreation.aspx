@@ -1,14 +1,13 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="Route.Home" Async="true" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="JSOBeatCreation.aspx.cs" Inherits="Route.JSOBeatCreation" %>
 
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>Home</title>
+    <title>JSO Beat Creation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="Content/bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
@@ -43,6 +42,22 @@
             #btnOpenModal {
                 width: 100%;
             }
+
+            .grid-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+                .grid-wrapper table {
+                    width: 100%;
+                    display: block;
+                }
+
+                    .grid-wrapper table thead,
+                    .grid-wrapper table tbody {
+                        display: table;
+                        width: 100%;
+                    }
         }
 
         .navbar-white .navbar-toggler {
@@ -51,6 +66,66 @@
 
         .navbar-white .navbar-toggler-icon {
             background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        .grid-wrapper {
+            max-height: 300px;
+            max-width: 100%;
+            overflow: auto;
+        }
+
+        /* Spinner styles */
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 4px solid #ddd;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: auto;
+            margin-left: 0px;
+            margin-top: 5px;
+            display: none; /* Hidden by default */
+        }
+
+        /* Keyframes for spinner animation */
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Style for the file upload container */
+        .file-upload-container {
+            position: relative;
+        }
+
+        /* Style for the file input button */
+        .file-upload-input {
+            padding-right: 50px; /* Space for the image */
+        }
+
+        /* Style for the link that contains the image */
+        .file-upload-link {
+            position: absolute;
+            top: 50%;
+            right: 0px; /* Adjust position of the icon */
+            transform: translateY(-50%);
+            background-color: #e6e6e6; /* Same as the button color */
+            border-radius: 3px;
+            padding: 5px;
+            display: inline-block;
+        }
+
+        /* Style for the Excel image */
+        .file-upload-icon {
+            width: 25px; /* Adjust the size of the image */
+            height: 25px;
+            background-color: transparent; /* Keep the background transparent */
         }
 
         /* Container for the progress bar */
@@ -96,7 +171,6 @@
             }
         }
 
-        /*a*/
         /* Navbar */
         .navbar-white .navbar-toggler {
             border-color: rgba(0, 0, 0, 0.1);
@@ -171,7 +245,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script>
         function showToast(message, styleClass) {
             var toast = $('<div class="toast-custom ' + styleClass + '">' + message + '</div>').appendTo('#toastContainer');
@@ -198,6 +271,13 @@
             }, 3000);
         }
 
+        function showNoteAlert() {
+            $('#noteAlert').show();
+        }
+
+        function hideNoteAlert() {
+            $('#noteAlert').hide();
+        }
     </script>
 
     <script>
@@ -226,40 +306,6 @@
             <%--<span class="brand">SYNAPSE</span>--%>
             <a class="navbar-brand" runat="server" href="~/Home">SYNAPSE</a>
         </nav>
-
-        <%--<nav class="navbar navbar-expand-lg navbar-white bg-white">
-            <div class="container">
-                <a class="navbar-brand" runat="server" href="~/Home">SYNAPSE</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Home" onclick="showLoading()">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Create" onclick="showLoading()">Create</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Map" onclick="showLoading()">Map</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/Transfer" onclick="showLoading()">Transfer</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">BeatReailgnment</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SOBeatCreation</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>--%>
         <hr />
 
         <%--progress bar--%>
@@ -286,7 +332,7 @@
                         <a class="nav-link" runat="server" href="~/Transfer" onclick="showLoading()">Transfer</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
+                        <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">New Geo</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">Beat Reailgnment</a>
@@ -302,8 +348,6 @@
 
             <!-- Main Content -->
             <main class="content">
-                <h2 style="text-align: center; margin-top: 20px;">Welcome</h2>
-
                 <div class="headtag">
                     <asp:Label ID="lblUserName" runat="server" Style="color: black; float: right; margin-top: 0px; margin-bottom: -20px; margin-right: 20px"></asp:Label>
                 </div>
@@ -314,18 +358,44 @@
                         </td>
                     </tr>
                 </table>
+                <h2 style="text-align: center; margin-top: 20px;">JSO Beat Creation</h2>
                 <br />
+
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server">
+                            <div class="file-upload-container position-relative">
+                                <asp:FileUpload ID="FileUpload_Id" runat="server" CssClass="form-control file-upload-input" accept=".xls, .xlsx, .xlsb" />
+                                <a href="Excel/Sample.xlsx" download="Sample" class="file-upload-link" title="Download Sample Excel Template">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png?20190925171014" alt="Excel Logo" class="file-upload-icon" /></a>
+                            </div>
+                        </div>
+                        <div id="btnDivSplit2" class="col-12 col-md-3 mb-2 mb-md-0" runat="server">
+                            <asp:Button ID="SubmitBtn" runat="server" Text="Submit" CssClass="btn btn-info form-control" />
+                        </div>
+                        <%--<div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <div id="spinner" class="spinner"></div>
+                    </div>--%>
+                    </div>
+                </div>
+
+
             </main>
 
+
+
+            <%--<asp:Button ID="btnContinue" runat="server" Text="Continue" OnClick="btnContinue_Click" />--%>
+
+
             <%-- Notification Label --%>
-            <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
-            </div>
+            <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;"></div>
             <asp:HiddenField ID="hdnBusinessType" runat="server" />
             <asp:HiddenField ID="hdnRole" runat="server" />
         </div>
     </form>
 
-    <%--script for progressbar--%>
+
+    <%--scri[pt for progressbar--%>
     <script>
         function showLoading() {
             document.getElementById('loadingOverlay').style.display = 'block';
@@ -338,4 +408,3 @@
 
 </body>
 </html>
-

@@ -341,10 +341,13 @@
                         <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">BeatReailgnment</a>
+                        <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">Beat Reailgnment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SOBeatCreation</a>
+                        <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SO Beat Creation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">JSO Beat Creation</a>
                     </li>
                 </ul>
             </aside>

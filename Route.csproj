@@ -149,6 +149,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Home.aspx" />
+    <Content Include="JSOBeatCreation.aspx" />
     <Content Include="Map.aspx" />
     <Content Include="Modify.aspx" />
     <Content Include="NewGeo.aspx" />
@@ -227,6 +228,13 @@
     </Compile>
     <Compile Include="Home.aspx.designer.cs">
       <DependentUpon>Home.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="JSOBeatCreation.aspx.cs">
+      <DependentUpon>JSOBeatCreation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="JSOBeatCreation.aspx.designer.cs">
+      <DependentUpon>JSOBeatCreation.aspx</DependentUpon>
     </Compile>
     <Compile Include="Map.aspx.cs">
       <DependentUpon>Map.aspx</DependentUpon>
