@@ -170,6 +170,76 @@
                 max-width: 100%; /* Ensures the progress bar can stretch to the screen size */
             }
         }
+
+        /* Navbar */
+        .navbar-white .navbar-toggler {
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-white .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 50px;
+            left: -250px;
+            width: 250px;
+            height: calc(100vh - 50px);
+            /*background-color: rgba(34, 34, 34, 0.95);*/
+            color: white;
+            overflow-y: auto;
+            transition: left 0.3s ease-in-out;
+            z-index: 1100;
+            padding: 15px;
+        }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .sidebar ul {
+                padding: 0;
+                list-style: none;
+            }
+
+            .sidebar .nav-item {
+                padding: 8px 0;
+            }
+
+            .sidebar .nav-link {
+                color: white;
+                text-decoration: none;
+                display: block;
+                padding: 10px;
+                transition: background 0.3s;
+            }
+
+                .sidebar .nav-link:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                }
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 50px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+        }
+
+        /* Content */
+        .content {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .sidebar.open ~ .content {
+            opacity: 0.7;
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -209,22 +279,36 @@
         function hideNoteAlert() {
             $('#noteAlert').hide();
         }
+    </script>
 
-        //function showLoader() {
-        //    document.getElementById('spinner').style.display = 'block';
-        //}
+    <script>
+        function toggleSidebar() {
+            $(".sidebar").toggleClass("open");
+            $(".overlay").toggle();
+        }
 
-        //// Function to hide loader
-        //function hideLoader() {
-        //    document.getElementById('spinner').style.display = 'none';
-        //}
-
+        $(document).ready(function () {
+            $(".overlay").click(function () {
+                $(".sidebar").removeClass("open");
+                $(this).hide();
+            });
+        });
     </script>
 </head>
 <body>
     <form id="form1" runat="server">
+        <div class="overlay"></div>
 
-        <nav class="navbar navbar-expand-lg navbar-white bg-white">
+        <!-- Navbar -->
+        <nav class="navbar navbar-white bg-white">
+            <button class="navbar-toggler" type="button" onclick="toggleSidebar()">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <%--<span class="brand">SYNAPSE</span>--%>
+            <a class="navbar-brand" runat="server" href="~/Home">SYNAPSE</a>
+        </nav>
+
+        <%--<nav class="navbar navbar-expand-lg navbar-white bg-white">
             <div class="container">
                 <a class="navbar-brand" runat="server" href="~/Home">SYNAPSE</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -256,7 +340,7 @@
                     </ul>
                 </div>
             </div>
-        </nav>
+        </nav>--%>
 
         <hr />
         <%--progress bar--%>
@@ -267,113 +351,142 @@
         </div>
 
         <div class="container body-content">
-            <div class="headtag">
-                <asp:Label ID="lblUserName" runat="server" Style="color: black; float: right; margin-top: 0px; margin-bottom: -20px; margin-right: 20px"></asp:Label>
-            </div>
-            <table style="width: 100%; font-family: Calibri; font-size: small">
-                <tr>
-                    <td style="text-align: right">
-                        <asp:Label ID="lbl_msg" Text="" runat="server" ForeColor="Red" Font-Bold="true" Font-Size="Large" BackColor="LightPink"></asp:Label>
-                    </td>
-                </tr>
-            </table>
-            <h2 style="text-align: center; margin-top: 20px;">New Geo</h2>
-            <br />
 
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:TextBox ID="DistCodeTxt" runat="server" CssClass="form-control" placeholder="Dist. Code"></asp:TextBox>
-                    </div>
-                    <div id="btnDivSingle" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="true">
-                        <asp:Button ID="EnterSubmit" runat="server" Text="Enter" CssClass="btn btn-primary form-control"
-                            OnClientClick="showLoading()" OnClick="BtnEnter_Click" />
-                    </div>
-                    <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
-                        <div class="file-upload-container position-relative">
-                            <asp:FileUpload ID="FileUpload_Id" runat="server" CssClass="form-control file-upload-input" accept=".xls, .xlsx, .xlsb" />
-                            <a href="Excel/Sample.xlsx" download="Sample" class="file-upload-link" title="Download Sample Excel Template">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png?20190925171014" alt="Excel Logo" class="file-upload-icon" /></a>
+            <aside class="sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Home" onclick="showLoading()">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Create" onclick="showLoading()">Create</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Map" onclick="showLoading()">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Transfer" onclick="showLoading()">Transfer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">BeatReailgnment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SOBeatCreation</a>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content">
+                <div class="headtag">
+                    <asp:Label ID="lblUserName" runat="server" Style="color: black; float: right; margin-top: 0px; margin-bottom: -20px; margin-right: 20px"></asp:Label>
+                </div>
+                <table style="width: 100%; font-family: Calibri; font-size: small">
+                    <tr>
+                        <td style="text-align: right">
+                            <asp:Label ID="lbl_msg" Text="" runat="server" ForeColor="Red" Font-Bold="true" Font-Size="Large" BackColor="LightPink"></asp:Label>
+                        </td>
+                    </tr>
+                </table>
+                <h2 style="text-align: center; margin-top: 20px;">New Geo</h2>
+                <br />
+
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:TextBox ID="DistCodeTxt" runat="server" CssClass="form-control" placeholder="Dist. Code"></asp:TextBox>
                         </div>
-                    </div>
-                    <div id="btnDivSplit2" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
-                        <asp:Button ID="SubmitBtn" runat="server" Text="Submit" CssClass="btn btn-info form-control" OnClientClick="showLoading()" OnClick="Submit_Click" />
-                    </div>
-                    <%--<div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <div id="btnDivSingle" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="true">
+                            <asp:Button ID="EnterSubmit" runat="server" Text="Enter" CssClass="btn btn-primary form-control"
+                                OnClientClick="showLoading()" OnClick="BtnEnter_Click" />
+                        </div>
+                        <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
+                            <div class="file-upload-container position-relative">
+                                <asp:FileUpload ID="FileUpload_Id" runat="server" CssClass="form-control file-upload-input" accept=".xls, .xlsx, .xlsb" />
+                                <a href="Excel/Sample.xlsx" download="Sample" class="file-upload-link" title="Download Sample Excel Template">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png?20190925171014" alt="Excel Logo" class="file-upload-icon" /></a>
+                            </div>
+                        </div>
+                        <div id="btnDivSplit2" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
+                            <asp:Button ID="SubmitBtn" runat="server" Text="Submit" CssClass="btn btn-info form-control" OnClientClick="showLoading()" OnClick="Submit_Click" />
+                        </div>
+                        <%--<div class="col-12 col-md-3 mb-2 mb-md-0">
                         <div id="spinner" class="spinner"></div>
                     </div>--%>
+                    </div>
                 </div>
-            </div>
 
-            <%-- Note --%>
-            <div class="container">
-                <div class="row mt-3">
-                    <div class="alert alert-success" role="alert" id="noteAlert" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h4 class="alert-heading">Note</h4>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <%--<span aria-hidden="true">&times;</span>--%>
-                            </button>
-                        </div>
-                        <hr />
-                        <p class="mb-0">
-                            Some of the 'OUTLET CLASSIFICATION 1' will be replaced with the marked 'ExistingData'. 
+                <%-- Note --%>
+                <div class="container">
+                    <div class="row mt-3">
+                        <div class="alert alert-success" role="alert" id="noteAlert" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h4 class="alert-heading">Note</h4>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <%--<span aria-hidden="true">&times;</span>--%>
+                                </button>
+                            </div>
+                            <hr />
+                            <p class="mb-0">
+                                Some of the 'OUTLET CLASSIFICATION 1' will be replaced with the marked 'ExistingData'. 
                             Click 
                             <asp:Button ID="btnContinue" runat="server" Text="Continue" CssClass="btn btn-success form-control" Width="100px" OnClientClick="showLoading()" OnClick="btnContinue_Click" />
-                            to proceed.
-                        </p>
+                                to proceed.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <%-- GridView --%>
-            <div class="row">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;" OnRowDataBound="GridView1_RowDataBound">
-                            <Columns>
-                                <asp:BoundField DataField="RETAILERCODE" HeaderText="RETAILER CODE" />
-                                <asp:BoundField DataField="RETAILER NAME" HeaderText="RETAILER NAME" />
-                                <asp:BoundField DataField="ROUTE CODE" HeaderText="ROUTE CODE" />
-                                <asp:BoundField DataField="ROUTE NAME" HeaderText="ROUTE NAME" />
-                                <asp:BoundField DataField="OUTLET CLASSIFICATION 2" HeaderText="OUTLET CLASSIFICATION 2" />
-                                <asp:BoundField DataField="OUTLET CLASSIFICATION 3" HeaderText="OUTLET CLASSIFICATION 3" />
-                                <asp:BoundField DataField="OUTLET CLASSIFICATION 1" HeaderText="OUTLET CLASSIFICATION 1" />
-                                <asp:BoundField DataField="ExistingData" HeaderText="ExistingData" />
+                <%-- GridView --%>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="grid-wrapper">
+                            <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                                Style="margin-bottom: 0px; text-align: center;" OnRowDataBound="GridView1_RowDataBound">
+                                <Columns>
+                                    <asp:BoundField DataField="RETAILERCODE" HeaderText="RETAILER CODE" />
+                                    <asp:BoundField DataField="RETAILER NAME" HeaderText="RETAILER NAME" />
+                                    <asp:BoundField DataField="ROUTE CODE" HeaderText="ROUTE CODE" />
+                                    <asp:BoundField DataField="ROUTE NAME" HeaderText="ROUTE NAME" />
+                                    <asp:BoundField DataField="OUTLET CLASSIFICATION 2" HeaderText="OUTLET CLASSIFICATION 2" />
+                                    <asp:BoundField DataField="OUTLET CLASSIFICATION 3" HeaderText="OUTLET CLASSIFICATION 3" />
+                                    <asp:BoundField DataField="OUTLET CLASSIFICATION 1" HeaderText="OUTLET CLASSIFICATION 1" />
+                                    <asp:BoundField DataField="ExistingData" HeaderText="ExistingData" />
 
-                                <asp:BoundField DataField="MatchStatus" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="RETAILER ADD1" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="RETAILER ADD2" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="RETAILER ADD3" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="PHONEOFF" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="TAXTYPE" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="RETAILER GSTTIN" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="COMPANYCODE" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="VANNONVAN" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="FREQUENCY" HeaderText="MatchStatus" Visible="false" />
-                                <asp:BoundField DataField="MARKET CODE" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="MatchStatus" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="RETAILER ADD1" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="RETAILER ADD2" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="RETAILER ADD3" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="PHONEOFF" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="TAXTYPE" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="RETAILER GSTTIN" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="COMPANYCODE" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="VANNONVAN" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="FREQUENCY" HeaderText="MatchStatus" Visible="false" />
+                                    <asp:BoundField DataField="MARKET CODE" HeaderText="MatchStatus" Visible="false" />
 
-                            </Columns>
-                        </asp:GridView>
+                                </Columns>
+                            </asp:GridView>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="SSMExistGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;">
-                            <Columns>
-                                <asp:BoundField DataField="SSM CODE" HeaderText="SSM CODE" />
-                                <asp:BoundField DataField="SSM NAME" HeaderText="SSM NAME" />
-                            </Columns>
-                        </asp:GridView>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="grid-wrapper">
+                            <asp:GridView ID="SSMExistGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                                Style="margin-bottom: 0px; text-align: center;">
+                                <Columns>
+                                    <asp:BoundField DataField="SSM CODE" HeaderText="SSM CODE" />
+                                    <asp:BoundField DataField="SSM NAME" HeaderText="SSM NAME" />
+                                </Columns>
+                            </asp:GridView>
+                        </div>
                     </div>
                 </div>
-            </div>
-
+            </main>
 
 
 

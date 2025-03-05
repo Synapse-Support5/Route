@@ -5,62 +5,159 @@
 <head runat="server">
     <title>Test Page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <%--<link href="Content/bootstrap.css" rel="stylesheet" />--%>
+    <link href="Content/bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <style>
+        /* Navbar */
+        .navbar-white .navbar-toggler {
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+        .navbar-white .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 50px;
+            left: -250px;
+            width: 250px;
+            height: calc(100vh - 50px);
+            /*background-color: rgba(34, 34, 34, 0.95);*/
+            color: white;
+            overflow-y: auto;
+            transition: left 0.3s ease-in-out;
+            z-index: 1100;
+            padding: 15px;
+        }
+        .sidebar.open {
+            left: 0;
+        }
+        .sidebar ul {
+            padding: 0;
+            list-style: none;
+        }
+        .sidebar .nav-item {
+            padding: 8px 0;
+        }
+        .sidebar .nav-link {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            transition: background 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 50px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+        }
+
+        /* Content */
+        .content {
+            margin-top: 50px;
+            padding: 20px;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .sidebar.open ~ .content {
+            opacity: 0.7;
+        }
+    </style>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            $(".sidebar").toggleClass("open");
+            $(".overlay").toggle();
+        }
+
+        $(document).ready(function () {
+            $(".overlay").click(function () {
+                $(".sidebar").removeClass("open");
+                $(this).hide();
+            });
+        });
+    </script>
 </head>
 <body>
     <form id="form1" runat="server">
-        <div>
-            <button type="button" class="form-control" id="btnOpenModal" data-toggle="modal" data-target="#exampleModalCenter">
-                Search...
+        <div class="overlay"></div>
+
+        <!-- Navbar -->
+        <nav class="navbar navbar-white bg-white">
+            <button class="navbar-toggler" type="button" onclick="toggleSidebar()">
+                <span class="navbar-toggler-icon"></span>
             </button>
-        </div>
+            <span class="brand">SYNAPSE</span>
+        </nav>
+        <hr />
 
-        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <asp:TextBox ID="SearchTxt" runat="server" placeholder="Search..." CssClass="form-control mr-3" Style="width: 50%;" />
-                        <div class="form-control d-flex align-items-center justify-content-center mr-3" style="width: 30%;">
-                            <asp:RadioButton ID="rbActive" runat="server" GroupName="Status" Text="Active" CssClass="radio-option mr-3" />
-                            <asp:RadioButton ID="rbInactive" runat="server" GroupName="Status" Text="Inactive" CssClass="radio-option" />
-                        </div>
-                        <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-                        <asp:UpdatePanel ID="UpdatePanelFetch" runat="server" UpdateMode="Conditional">
-                            <ContentTemplate>
-                                <asp:Button ID="btnFetch" runat="server" CssClass="btn btn-primary" Text="Fetch" OnClick="btnFetch_Click" />
-                            </ContentTemplate>
-                        </asp:UpdatePanel>
-                    </div>
+        <div class="container body-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Create">Create</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Map">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Transfer">Transfer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/NewGeo">NewGeo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/BeatRealignment">Beat Realignment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/SOBeatCreation">SO Beat Creation</a>
+                    </li>
+                </ul>
+            </aside>
 
-                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                        
-                        <asp:UpdatePanel ID="UpdatePanelGrid" runat="server" UpdateMode="Conditional">
-                            <ContentTemplate>
-                                <asp:GridView ID="SearchModalGrid" runat="server" CssClass="table table-bordered form-group"
-                                    AutoGenerateColumns="false">
-                                    <Columns>
-                                        <asp:BoundField DataField="Distcode" HeaderText="Dist. Code" />
-                                        <asp:BoundField DataField="RouteCode" HeaderText="Route Code" />
-                                        <asp:BoundField DataField="RtrCode" HeaderText="Rtr Code" />
-                                        <asp:BoundField DataField="UrCode" HeaderText="Ur Code" />
-                                        <asp:BoundField DataField="Status" HeaderText="Status" />
-                                    </Columns>
-                                </asp:GridView>
-                            </ContentTemplate>
-                        </asp:UpdatePanel>
-                    </div>
+            <!-- Main Content -->
+            <main class="content">
+                <h2 style="text-align: center; margin-top: 20px;">Welcome</h2>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
+                <div class="headtag">
+                    <asp:Label ID="lblUserName" runat="server" Style="color: black; float: right; margin-right: 20px;"></asp:Label>
                 </div>
-            </div>
+                <table style="width: 100%; font-family: Calibri; font-size: small">
+                    <tr>
+                        <td style="text-align: right">
+                            <asp:Label ID="lbl_msg" Text="" runat="server" ForeColor="Red" Font-Bold="true" Font-Size="Large" BackColor="LightPink"></asp:Label>
+                        </td>
+                    </tr>
+                </table>
+            </main>
+
+            <!-- Notification Section -->
+            <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;"></div>
+            <asp:HiddenField ID="hdnBusinessType" runat="server" />
+            <asp:HiddenField ID="hdnRole" runat="server" />
         </div>
     </form>
-
 </body>
 </html>

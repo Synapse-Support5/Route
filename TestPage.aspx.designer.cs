@@ -24,75 +24,39 @@ namespace Route
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
-        /// SearchTxt control.
+        /// lblUserName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox SearchTxt;
+        protected global::System.Web.UI.WebControls.Label lblUserName;
 
         /// <summary>
-        /// rbActive control.
+        /// lbl_msg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton rbActive;
+        protected global::System.Web.UI.WebControls.Label lbl_msg;
 
         /// <summary>
-        /// rbInactive control.
+        /// hdnBusinessType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton rbInactive;
+        protected global::System.Web.UI.WebControls.HiddenField hdnBusinessType;
 
         /// <summary>
-        /// ScriptManager1 control.
+        /// hdnRole control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.ScriptManager ScriptManager1;
-
-        /// <summary>
-        /// UpdatePanelFetch control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.UpdatePanel UpdatePanelFetch;
-
-        /// <summary>
-        /// btnFetch control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnFetch;
-
-        /// <summary>
-        /// UpdatePanelGrid control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.UpdatePanel UpdatePanelGrid;
-
-        /// <summary>
-        /// SearchModalGrid control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView SearchModalGrid;
+        protected global::System.Web.UI.WebControls.HiddenField hdnRole;
     }
 }

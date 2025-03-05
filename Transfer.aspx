@@ -150,11 +150,80 @@
         .ui-helper-hidden-accessible {
             display: none;
         }
+
+        /* Navbar */
+        .navbar-white .navbar-toggler {
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-white .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 50px;
+            left: -250px;
+            width: 250px;
+            height: calc(100vh - 50px);
+            /*background-color: rgba(34, 34, 34, 0.95);*/
+            color: white;
+            overflow-y: auto;
+            transition: left 0.3s ease-in-out;
+            z-index: 1100;
+            padding: 15px;
+        }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .sidebar ul {
+                padding: 0;
+                list-style: none;
+            }
+
+            .sidebar .nav-item {
+                padding: 8px 0;
+            }
+
+            .sidebar .nav-link {
+                color: white;
+                text-decoration: none;
+                display: block;
+                padding: 10px;
+                transition: background 0.3s;
+            }
+
+                .sidebar .nav-link:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                }
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 50px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+        }
+
+        /* Content */
+        .content {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .sidebar.open ~ .content {
+            opacity: 0.7;
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -230,11 +299,34 @@
         }
     </script>
 
+    <script>
+        function toggleSidebar() {
+            $(".sidebar").toggleClass("open");
+            $(".overlay").toggle();
+        }
+
+        $(document).ready(function () {
+            $(".overlay").click(function () {
+                $(".sidebar").removeClass("open");
+                $(this).hide();
+            });
+        });
+    </script>
 </head>
 <body>
     <form id="form2" runat="server">
+        <div class="overlay"></div>
 
-        <nav class="navbar navbar-expand-lg navbar-white bg-white">
+        <!-- Navbar -->
+        <nav class="navbar navbar-white bg-white">
+            <button class="navbar-toggler" type="button" onclick="toggleSidebar()">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <%--<span class="brand">SYNAPSE</span>--%>
+            <a class="navbar-brand" runat="server" href="~/Home">SYNAPSE</a>
+        </nav>
+
+        <%--<nav class="navbar navbar-expand-lg navbar-white bg-white">
             <div class="container">
                 <a class="navbar-brand" runat="server" href="~/Home">SYNAPSE</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -266,7 +358,7 @@
                     </ul>
                 </div>
             </div>
-        </nav>
+        </nav>--%>
         <hr />
 
         <%--progress bar--%>
@@ -277,130 +369,159 @@
         </div>
 
         <div class="container body-content">
-            <div class="headtag">
-                <asp:Label ID="lblUserName" runat="server" Style="color: black; float: right; margin-top: 0px; margin-bottom: -20px; margin-right: 20px"></asp:Label>
-            </div>
-            <table style="width: 100%; font-family: Calibri; font-size: small">
-                <tr>
-                    <td style="text-align: right">
-                        <asp:Label ID="lbl_msg" Text="" runat="server" ForeColor="Red" Font-Bold="true" Font-Size="Large" BackColor="LightPink"></asp:Label>
-                    </td>
-                </tr>
-            </table>
-            <h2 style="text-align: center; margin-top: 20px;">Transfer Route
-                <%--<asp:Label runat="server" ID="LabelId" Text=""></asp:Label>--%>
-            </h2>
-            <br />
 
-            <div id="routeTransferDiv" runat="server" class="container mt-3">
-                <div class="row mb-3">
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="StateDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="StateDrp_SelectedIndexChanged">
-                            <asp:ListItem Text="State" Value=""></asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="AreaDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="AreaDrp_SelectedIndexChanged">
-                            <asp:ListItem Text="Area" Value=""></asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="ZoneDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="ZoneDrp_SelectedIndexChanged">
-                            <asp:ListItem Text="Zone" Value=""></asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="FromDistDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="FromDistDrp_SelectedIndexChanged">
-                            <asp:ListItem Text="From Distributor" Value=""></asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
+            <aside class="sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Home" onclick="showLoading()">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Create" onclick="showLoading()">Create</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Map" onclick="showLoading()">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Transfer" onclick="showLoading()">Transfer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">BeatReailgnment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SOBeatCreation</a>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content">
+                <div class="headtag">
+                    <asp:Label ID="lblUserName" runat="server" Style="color: black; float: right; margin-top: 0px; margin-bottom: -20px; margin-right: 20px"></asp:Label>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="TypeDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="TypeDrp_SelectedIndexChanged">
-                            <asp:ListItem Text="Transfer Type" Value=""></asp:ListItem>
-                            <asp:ListItem Text="Existing" Value="Existing"></asp:ListItem>
-                            <asp:ListItem Text="Split" Value="Split"></asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
+                <table style="width: 100%; font-family: Calibri; font-size: small">
+                    <tr>
+                        <td style="text-align: right">
+                            <asp:Label ID="lbl_msg" Text="" runat="server" ForeColor="Red" Font-Bold="true" Font-Size="Large" BackColor="LightPink"></asp:Label>
+                        </td>
+                    </tr>
+                </table>
+                <h2 style="text-align: center; margin-top: 20px;">Transfer Route
+                <%--<asp:Label runat="server" ID="LabelId" Text=""></asp:Label>--%>
+                </h2>
+                <br />
 
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:TextBox ID="TypeDrpSelected" runat="server" CssClass="form-control" placeholder="Existing" ReadOnly="true" Visible="false"></asp:TextBox>
-                        <button type="button" class="form-control" id="btnOpenModal" runat="server" data-toggle="modal" data-target="#exampleModalCenter" visible="false" onclick="handleSplitButtonClick()">
-                            Split
-                        </button>
+                <div id="routeTransferDiv" runat="server" class="container mt-3">
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:DropDownList ID="StateDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="StateDrp_SelectedIndexChanged">
+                                <asp:ListItem Text="State" Value=""></asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:DropDownList ID="AreaDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="AreaDrp_SelectedIndexChanged">
+                                <asp:ListItem Text="Area" Value=""></asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:DropDownList ID="ZoneDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="ZoneDrp_SelectedIndexChanged">
+                                <asp:ListItem Text="Zone" Value=""></asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:DropDownList ID="FromDistDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="FromDistDrp_SelectedIndexChanged">
+                                <asp:ListItem Text="From Distributor" Value=""></asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
                     </div>
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:DropDownList ID="TypeDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="TypeDrp_SelectedIndexChanged">
+                                <asp:ListItem Text="Transfer Type" Value=""></asp:ListItem>
+                                <asp:ListItem Text="Existing" Value="Existing"></asp:ListItem>
+                                <asp:ListItem Text="Split" Value="Split"></asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
 
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="ToDistDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" onchange="showLoading()" OnSelectedIndexChanged="RouteTransToDistDrp_SelectedIndexChanged">
-                        </asp:DropDownList>
-                        <input type="text" id="ToDistSearch" runat="server" class="form-control" placeholder="Enter To Distributor" />
-                        <%--<asp:DropDownList ID="ToDistDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="RouteTransToDistDrp_SelectedIndexChanged">
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:TextBox ID="TypeDrpSelected" runat="server" CssClass="form-control" placeholder="Existing" ReadOnly="true" Visible="false"></asp:TextBox>
+                            <button type="button" class="form-control" id="btnOpenModal" runat="server" data-toggle="modal" data-target="#exampleModalCenter" visible="false" onclick="handleSplitButtonClick()">
+                                Split
+                            </button>
+                        </div>
+
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:DropDownList ID="ToDistDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" onchange="showLoading()" OnSelectedIndexChanged="RouteTransToDistDrp_SelectedIndexChanged">
+                            </asp:DropDownList>
+                            <input type="text" id="ToDistSearch" runat="server" class="form-control" placeholder="Enter To Distributor" />
+                            <%--<asp:DropDownList ID="ToDistDrp" runat="server" AutoPostBack="true" class="form-control" onchange="showLoading()" OnSelectedIndexChanged="RouteTransToDistDrp_SelectedIndexChanged">
                             <asp:ListItem Text="To Distributor" Value=""></asp:ListItem>
                         </asp:DropDownList>--%>
-                    </div>
-                    <div id="btnDivSingle" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="true">
-                        <asp:Button ID="RouteTransferSubmit" runat="server" Text="Transfer" CssClass="btn btn-success form-control"
-                            OnClientClick="showLoading()" OnClick="RouteTransferSubmit_Click" />
-                    </div>
-
-                    <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
-                        <div style="display: flex;">
-                            <asp:Button ID="View" runat="server" Text="View" CssClass="btn btn-info form-control" Style="border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; width: 30%; margin-right: 5px;"
-                                OnClientClick="showLoading()" OnClick="View_Click" />
-                            <asp:Button ID="RouteTransferSubmitH" runat="server" Text="Transfer" CssClass="btn btn-success form-control"
-                                Style="border-top-left-radius: 0; border-bottom-left-radius: 0; width: 70%;"
+                        </div>
+                        <div id="btnDivSingle" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="true">
+                            <asp:Button ID="RouteTransferSubmit" runat="server" Text="Transfer" CssClass="btn btn-success form-control"
                                 OnClientClick="showLoading()" OnClick="RouteTransferSubmit_Click" />
+                        </div>
+
+                        <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
+                            <div style="display: flex;">
+                                <asp:Button ID="View" runat="server" Text="View" CssClass="btn btn-info form-control" Style="border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; width: 30%; margin-right: 5px;"
+                                    OnClientClick="showLoading()" OnClick="View_Click" />
+                                <asp:Button ID="RouteTransferSubmitH" runat="server" Text="Transfer" CssClass="btn btn-success form-control"
+                                    Style="border-top-left-radius: 0; border-bottom-left-radius: 0; width: 70%;"
+                                    OnClientClick="showLoading()" OnClick="RouteTransferSubmit_Click" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row mt-3">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="RouteTransExistGridView" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;" OnRowCreated="RouteTransExistGridView_RowCreated">
-                            <Columns>
-                                <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
-                                <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
-                                <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
-                                <asp:BoundField DataField="MnfCde" HeaderText="MNFCode" />
-                                <asp:BoundField DataField="RouteTypeName" HeaderText="RouteType" />
-                                <asp:BoundField DataField="CoverageName" HeaderText="RouteCoverage" />
-                                <asp:BoundField DataField="WeekDay" HeaderText="Call Days" />
-                                <asp:BoundField DataField="Status" HeaderText="Status" />
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="grid-wrapper">
+                            <asp:GridView ID="RouteTransExistGridView" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                                Style="margin-bottom: 0px; text-align: center;" OnRowCreated="RouteTransExistGridView_RowCreated">
+                                <Columns>
+                                    <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
+                                    <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
+                                    <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
+                                    <asp:BoundField DataField="MnfCde" HeaderText="MNFCode" />
+                                    <asp:BoundField DataField="RouteTypeName" HeaderText="RouteType" />
+                                    <asp:BoundField DataField="CoverageName" HeaderText="RouteCoverage" />
+                                    <asp:BoundField DataField="WeekDay" HeaderText="Call Days" />
+                                    <asp:BoundField DataField="Status" HeaderText="Status" />
 
-                                <asp:TemplateField>
-                                    <ItemTemplate>
-                                        <div style="margin-right: 10px;">
-                                            <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input" style="position: relative; margin-left: -3px;" checked="checked" disabled="disabled" />
-                                        </div>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
+                                    <asp:TemplateField>
+                                        <ItemTemplate>
+                                            <div style="margin-right: 10px;">
+                                                <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input" style="position: relative; margin-left: -3px;" checked="checked" disabled="disabled" />
+                                            </div>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
 
-                            </Columns>
-                        </asp:GridView>
+                                </Columns>
+                            </asp:GridView>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="RouteTransSplitGridView" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;" OnRowCreated="RouteTransSplitGridView_RowCreated">
-                            <Columns>
-                                <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
-                                <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
-                                <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
-                                <asp:BoundField DataField="MnfCde" HeaderText="MNFCode" />
-                                <asp:BoundField DataField="RouteTypeName" HeaderText="RouteType" />
-                                <asp:BoundField DataField="CoverageName" HeaderText="RouteCoverage" />
-                                <asp:BoundField DataField="WeekDay" HeaderText="Call Days" />
-                                <asp:BoundField DataField="Status" HeaderText="Status" />
+                <div class="row">
+                    <div class="col-12">
+                        <div class="grid-wrapper">
+                            <asp:GridView ID="RouteTransSplitGridView" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                                Style="margin-bottom: 0px; text-align: center;" OnRowCreated="RouteTransSplitGridView_RowCreated">
+                                <Columns>
+                                    <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
+                                    <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
+                                    <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
+                                    <asp:BoundField DataField="MnfCde" HeaderText="MNFCode" />
+                                    <asp:BoundField DataField="RouteTypeName" HeaderText="RouteType" />
+                                    <asp:BoundField DataField="CoverageName" HeaderText="RouteCoverage" />
+                                    <asp:BoundField DataField="WeekDay" HeaderText="Call Days" />
+                                    <asp:BoundField DataField="Status" HeaderText="Status" />
 
-                                <%--<asp:TemplateField>
+                                    <%--<asp:TemplateField>
                                     <HeaderTemplate>
                                         <div style="margin-right: 10px;">
                                             <input type="checkbox" id="selectAllCheckBox" runat="server" style="margin-left: -3px;" class="form-check-input" onclick="selectAllCheckboxes(this)" />
@@ -413,62 +534,63 @@
                                         </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>--%>
-                            </Columns>
-                        </asp:GridView>
+                                </Columns>
+                            </asp:GridView>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row mt-3">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="RouteTransSplitRetailerGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;" OnRowCreated="RouteTransSplitRetailerGrid_RowCreated">
-                            <Columns>
-                                <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
-                                <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
-                                <asp:BoundField DataField="RtrId" HeaderText="Retailer Id" />
-                                <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
-                                <asp:BoundField DataField="UrCode" HeaderText="UR Code" />
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="grid-wrapper">
+                            <asp:GridView ID="RouteTransSplitRetailerGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                                Style="margin-bottom: 0px; text-align: center;" OnRowCreated="RouteTransSplitRetailerGrid_RowCreated">
+                                <Columns>
+                                    <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
+                                    <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
+                                    <asp:BoundField DataField="RtrId" HeaderText="Retailer Id" />
+                                    <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
+                                    <asp:BoundField DataField="UrCode" HeaderText="UR Code" />
 
-                                <asp:TemplateField>
-                                    <%--<HeaderTemplate>
+                                    <asp:TemplateField>
+                                        <%--<HeaderTemplate>
                             <div style="margin-right: 10px;">
                                 <input type="checkbox" id="selectAllCheckBox" runat="server" style="margin-left: -3px;" class="form-check-input" onclick="selectAllCheckboxes(this)" />
                             </div>
                         </HeaderTemplate>--%>
-                                    <ItemTemplate>
-                                        <div style="margin-right: 10px;">
-                                            <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox2" style="margin-left: -3px;" />
-                                        </div>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                            </Columns>
-                        </asp:GridView>
+                                        <ItemTemplate>
+                                            <div style="margin-right: 10px;">
+                                                <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox2" style="margin-left: -3px;" />
+                                            </div>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                </Columns>
+                            </asp:GridView>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row mt-3">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="ToDistExistViewGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;" OnRowCreated="ToDistExistViewGrid_RowCreated">
-                            <Columns>
-                                <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
-                                <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
-                                <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
-                                <asp:BoundField DataField="MnfCde" HeaderText="MNFCode" />
-                                <asp:BoundField DataField="RouteTypeName" HeaderText="RouteType" />
-                                <asp:BoundField DataField="CoverageName" HeaderText="RouteCoverage" />
-                                <asp:BoundField DataField="WeekDay" HeaderText="Call Days" />
-                                <asp:BoundField DataField="Status" HeaderText="Status" />
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="grid-wrapper">
+                            <asp:GridView ID="ToDistExistViewGrid" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered"
+                                Style="margin-bottom: 0px; text-align: center;" OnRowCreated="ToDistExistViewGrid_RowCreated">
+                                <Columns>
+                                    <asp:BoundField DataField="DistCode" HeaderText="DistCode" />
+                                    <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
+                                    <asp:BoundField DataField="RouteName" HeaderText="RouteName" />
+                                    <asp:BoundField DataField="MnfCde" HeaderText="MNFCode" />
+                                    <asp:BoundField DataField="RouteTypeName" HeaderText="RouteType" />
+                                    <asp:BoundField DataField="CoverageName" HeaderText="RouteCoverage" />
+                                    <asp:BoundField DataField="WeekDay" HeaderText="Call Days" />
+                                    <asp:BoundField DataField="Status" HeaderText="Status" />
 
-                            </Columns>
-                        </asp:GridView>
+                                </Columns>
+                            </asp:GridView>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
 
         <%-- Alert Modal for Retailer Existing Another DBR --%>

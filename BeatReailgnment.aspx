@@ -207,11 +207,80 @@
         .fetch-btn {
             width: 20% !important;
         }
+
+        /* Navbar */
+        .navbar-white .navbar-toggler {
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-white .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 50px;
+            left: -250px;
+            width: 250px;
+            height: calc(100vh - 50px);
+            /*background-color: rgba(34, 34, 34, 0.95);*/
+            color: white;
+            overflow-y: auto;
+            transition: left 0.3s ease-in-out;
+            z-index: 1100;
+            padding: 15px;
+        }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .sidebar ul {
+                padding: 0;
+                list-style: none;
+            }
+
+            .sidebar .nav-item {
+                padding: 8px 0;
+            }
+
+            .sidebar .nav-link {
+                color: white;
+                text-decoration: none;
+                display: block;
+                padding: 10px;
+                transition: background 0.3s;
+            }
+
+                .sidebar .nav-link:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                }
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 50px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+        }
+
+        /* Content */
+        .content {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .sidebar.open ~ .content {
+            opacity: 0.7;
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
         function showToast(message, styleClass) {
@@ -249,11 +318,34 @@
 
     </script>
 
+    <script>
+        function toggleSidebar() {
+            $(".sidebar").toggleClass("open");
+            $(".overlay").toggle();
+        }
+
+        $(document).ready(function () {
+            $(".overlay").click(function () {
+                $(".sidebar").removeClass("open");
+                $(this).hide();
+            });
+        });
+    </script>
 </head>
 <body>
     <form id="form1" runat="server">
+        <div class="overlay"></div>
 
-        <nav class="navbar navbar-expand-lg navbar-white bg-white">
+        <!-- Navbar -->
+        <nav class="navbar navbar-white bg-white">
+            <button class="navbar-toggler" type="button" onclick="toggleSidebar()">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <%--<span class="brand">SYNAPSE</span>--%>
+            <a class="navbar-brand" runat="server" href="~/Home">SYNAPSE</a>
+        </nav>
+
+        <%--<nav class="navbar navbar-expand-lg navbar-white bg-white">
             <div class="container">
                 <a class="navbar-brand" runat="server" href="~/Home">SYNAPSE</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -285,7 +377,7 @@
                     </ul>
                 </div>
             </div>
-        </nav>
+        </nav>--%>
 
         <hr />
         <%--progress bar--%>
@@ -296,86 +388,115 @@
         </div>
 
         <div class="container body-content">
-            <div class="headtag">
-                <asp:Label ID="lblUserName" runat="server" Style="color: black; float: right; margin-top: 0px; margin-bottom: -20px; margin-right: 20px"></asp:Label>
-            </div>
-            <table style="width: 100%; font-family: Calibri; font-size: small">
-                <tr>
-                    <td style="text-align: right">
-                        <asp:Label ID="lbl_msg" Text="" runat="server" ForeColor="Red" Font-Bold="true" Font-Size="Large" BackColor="LightPink"></asp:Label>
-                    </td>
-                </tr>
-            </table>
-            <h2 style="text-align: center; margin-top: 20px;">Beat Reailgnment</h2>
-            <br />
 
-            <div class="container">
-                <div class="row">
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+            <aside class="sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Home" onclick="showLoading()">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Create" onclick="showLoading()">Create</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Map" onclick="showLoading()">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/Transfer" onclick="showLoading()">Transfer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/NewGeo" onclick="showLoading()">NewGeo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/BeatReailgnment" onclick="showLoading()">BeatReailgnment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SOBeatCreation</a>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content">
+                <div class="headtag">
+                    <asp:Label ID="lblUserName" runat="server" Style="color: black; float: right; margin-top: 0px; margin-bottom: -20px; margin-right: 20px"></asp:Label>
+                </div>
+                <table style="width: 100%; font-family: Calibri; font-size: small">
+                    <tr>
+                        <td style="text-align: right">
+                            <asp:Label ID="lbl_msg" Text="" runat="server" ForeColor="Red" Font-Bold="true" Font-Size="Large" BackColor="LightPink"></asp:Label>
+                        </td>
+                    </tr>
+                </table>
+                <h2 style="text-align: center; margin-top: 20px;">Beat Reailgnment</h2>
+                <br />
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        </div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        </div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        </div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <button type="button" class="form-control" id="btnOpenModal" runat="server" data-toggle="modal" data-target="#exampleModalCenter">
+                                Search...
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <button type="button" class="form-control" id="btnOpenModal" runat="server" data-toggle="modal" data-target="#exampleModalCenter">
-                            Search...
-                        </button>
+                    <div class="row mt-3">
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:DropDownList ID="DistDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="DistDrp_SelectedIndexChanged">
+                            </asp:DropDownList>
+                            <input type="text" id="DistSearch" runat="server" class="form-control" placeholder="Enter Distributor" />
+                        </div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:DropDownList ID="FromRouteDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="FromRouteDrp_SelectedIndexChanged">
+                            </asp:DropDownList>
+                            <input type="text" id="FromRouteSearch" runat="server" class="form-control" placeholder="Enter From Route" />
+                        </div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:DropDownList ID="ToRouteDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="ToRouteDrp_SelectedIndexChanged">
+                            </asp:DropDownList>
+                            <input type="text" id="ToRouteSearch" runat="server" class="form-control" placeholder="Enter To Route" />
+                        </div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:Button ID="Submit" runat="server" Text="Submit" CssClass="btn btn-success form-control" OnClientClick="showLoading()" OnClick="Submit_Click" />
+                        </div>
                     </div>
                 </div>
+
+                <%-- GridView --%>
                 <div class="row mt-3">
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="DistDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="DistDrp_SelectedIndexChanged">
-                        </asp:DropDownList>
-                        <input type="text" id="DistSearch" runat="server" class="form-control" placeholder="Enter Distributor" />
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="FromRouteDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="FromRouteDrp_SelectedIndexChanged">
-                        </asp:DropDownList>
-                        <input type="text" id="FromRouteSearch" runat="server" class="form-control" placeholder="Enter From Route" />
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:DropDownList ID="ToRouteDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;" OnSelectedIndexChanged="ToRouteDrp_SelectedIndexChanged">
-                        </asp:DropDownList>
-                        <input type="text" id="ToRouteSearch" runat="server" class="form-control" placeholder="Enter To Route" />
-                    </div>
-                    <div class="col-12 col-md-3 mb-2 mb-md-0">
-                        <asp:Button ID="Submit" runat="server" Text="Submit" CssClass="btn btn-success form-control" OnClientClick="showLoading()" OnClick="Submit_Click" />
+                    <div class="col-12">
+                        <div class="grid-wrapper">
+                            <asp:GridView ID="DistCodeLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
+                                Style="margin-bottom: 0px; text-align: center;">
+                                <Columns>
+                                    <asp:BoundField DataField="Distcode" HeaderText="Dist. Code" />
+                                    <asp:BoundField DataField="RouteCode" HeaderText="Route Code" />
+                                    <asp:BoundField DataField="RouteName" HeaderText="Route Name" />
+                                    <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
+                                    <asp:BoundField DataField="RtrNm" HeaderText="Retailer Name" />
+                                </Columns>
+                            </asp:GridView>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <%-- GridView --%>
-            <div class="row mt-3">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="DistCodeLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;">
-                            <Columns>
-                                <asp:BoundField DataField="Distcode" HeaderText="Dist. Code" />
-                                <asp:BoundField DataField="RouteCode" HeaderText="Route Code" />
-                                <asp:BoundField DataField="RouteName" HeaderText="Route Name" />
-                                <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
-                                <asp:BoundField DataField="RtrNm" HeaderText="Retailer Name" />
-                            </Columns>
-                        </asp:GridView>
-                    </div>
-                </div>
-            </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="grid-wrapper">
+                            <asp:GridView ID="FromRouteLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
+                                Style="margin-bottom: 0px; text-align: center;">
+                                <Columns>
+                                    <asp:BoundField DataField="DistCode" HeaderText="Dist. Code" />
+                                    <asp:BoundField DataField="DistNm" HeaderText="Distributor" />
+                                    <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
+                                    <asp:BoundField DataField="RtrNm" HeaderText="Retailer Name" />
+                                    <asp:BoundField DataField="UrCode" HeaderText="UrCode" />
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="FromRouteLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;">
-                            <Columns>
-                                <asp:BoundField DataField="DistCode" HeaderText="Dist. Code" />
-                                <asp:BoundField DataField="DistNm" HeaderText="Distributor" />
-                                <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
-                                <asp:BoundField DataField="RtrNm" HeaderText="Retailer Name" />
-                                <asp:BoundField DataField="UrCode" HeaderText="UrCode" />
-
-                                <%--<asp:TemplateField HeaderText="Select All">
+                                    <%--<asp:TemplateField HeaderText="Select All">
                                     <HeaderTemplate>
                                         <div style="margin-right: 10px;">
                                             <input type="checkbox" id="parentCheckbox" style="margin-left: -3px;" class="form-check-input" />
@@ -387,91 +508,92 @@
                                         </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>--%>
-                            </Columns>
-                        </asp:GridView>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12">
-                    <div class="grid-wrapper">
-                        <asp:GridView ID="ToRouteLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
-                            Style="margin-bottom: 0px; text-align: center;">
-                            <Columns>
-                                <asp:BoundField DataField="DistCode" HeaderText="Dist. Code" />
-                                <asp:BoundField DataField="DistNm" HeaderText="Distributor" />
-                                <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
-                                <asp:BoundField DataField="RtrNm" HeaderText="Retailer Name" />
-                                <asp:BoundField DataField="UrCode" HeaderText="UrCode" />
-
-                                <asp:TemplateField HeaderText="Select All">
-                                    <HeaderTemplate>
-                                        <div style="margin-right: 10px; position: relative;">
-                                            <input type="checkbox" id="parentCheckbox" style="margin-left: -3px;" class="form-check-input" />
-                                        </div>
-                                    </HeaderTemplate>
-                                    <ItemTemplate>
-                                        <div style="margin-right: 10px; position: relative;">
-                                            <input type="checkbox" id="CheckBox1" runat="server" class="child-checkbox form-check-input rowCheckbox" style="margin-left: -3px;" />
-                                        </div>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                            </Columns>
-                        </asp:GridView>
-                    </div>
-                </div>
-            </div>
-
-            <%-- Modal for Search button --%>
-            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header d-flex align-items-center">
-                            <asp:TextBox ID="SearchTxt" runat="server" placeholder="Search..." CssClass="form-control mr-3" Style="width: 70%;" />
-
-                            <div class="form-control d-flex align-items-center justify-content-center mr-3" style="width: 30%;">
-                                <asp:RadioButton ID="rbActive" runat="server" GroupName="Status" Text="Active" CssClass="radio-option mr-3" Style="margin-top: 8px;" />
-                                <asp:RadioButton ID="rbInactive" runat="server" GroupName="Status" Text="InActive" CssClass="radio-option" Style="margin-top: 8px;" />
-                            </div>
-                            <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-                            <asp:UpdatePanel ID="UpdatePanelFetch" runat="server" UpdateMode="Conditional">
-                                <ContentTemplate>
-                                    <asp:Button ID="btnFetch" runat="server" CssClass="btn btn-primary" Text="      Fetch      " OnClick="btnFetch_Click" Style="width: 100%;" />
-                                </ContentTemplate>
-                            </asp:UpdatePanel>
+                                </Columns>
+                            </asp:GridView>
                         </div>
+                    </div>
+                </div>
 
+                <div class="row">
+                    <div class="col-12">
+                        <div class="grid-wrapper">
+                            <asp:GridView ID="ToRouteLoadGridView" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered"
+                                Style="margin-bottom: 0px; text-align: center;">
+                                <Columns>
+                                    <asp:BoundField DataField="DistCode" HeaderText="Dist. Code" />
+                                    <asp:BoundField DataField="DistNm" HeaderText="Distributor" />
+                                    <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
+                                    <asp:BoundField DataField="RtrNm" HeaderText="Retailer Name" />
+                                    <asp:BoundField DataField="UrCode" HeaderText="UrCode" />
 
-                        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                            <div class="form-group">
-                                <asp:UpdatePanel ID="UpdatePanelGrid" runat="server" UpdateMode="Conditional">
+                                    <asp:TemplateField HeaderText="Select All">
+                                        <HeaderTemplate>
+                                            <div style="margin-right: 10px; position: relative;">
+                                                <input type="checkbox" id="parentCheckbox" style="margin-left: -3px;" class="form-check-input" />
+                                            </div>
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <div style="margin-right: 10px; position: relative;">
+                                                <input type="checkbox" id="CheckBox1" runat="server" class="child-checkbox form-check-input rowCheckbox" style="margin-left: -3px;" />
+                                            </div>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                </Columns>
+                            </asp:GridView>
+                        </div>
+                    </div>
+                </div>
+
+                <%-- Modal for Search button --%>
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header d-flex align-items-center">
+                                <asp:TextBox ID="SearchTxt" runat="server" placeholder="Search..." CssClass="form-control mr-3" Style="width: 70%;" />
+
+                                <div class="form-control d-flex align-items-center justify-content-center mr-3" style="width: 30%;">
+                                    <asp:RadioButton ID="rbActive" runat="server" GroupName="Status" Text="Active" CssClass="radio-option mr-3" Style="margin-top: 8px;" />
+                                    <asp:RadioButton ID="rbInactive" runat="server" GroupName="Status" Text="InActive" CssClass="radio-option" Style="margin-top: 8px;" />
+                                </div>
+                                <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+                                <asp:UpdatePanel ID="UpdatePanelFetch" runat="server" UpdateMode="Conditional">
                                     <ContentTemplate>
-                                        <asp:GridView ID="SearchModalGrid" runat="server" AutoPostBack="True" CssClass="table table-bordered form-group"
-                                            AutoGenerateColumns="false" DataKeyNames="" Style="margin-bottom: -18px; text-align: center">
-                                            <Columns>
-                                                <asp:BoundField DataField="Distcode" HeaderText="Dist. Code" />
-                                                <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
-                                                <asp:BoundField DataField="RtrCode" HeaderText="Rtr Code" />
-                                                <asp:BoundField DataField="UrCode" HeaderText="UrCode" />
-                                                <asp:BoundField DataField="Status" HeaderText="Status" />
-
-                                            </Columns>
-                                            <HeaderStyle CssClass="header-hidden" />
-                                            <RowStyle CssClass="fixed-height-row" BackColor="#FFFFFF" />
-                                        </asp:GridView>
+                                        <asp:Button ID="btnFetch" runat="server" CssClass="btn btn-primary" Text="      Fetch      " OnClick="btnFetch_Click" Style="width: 100%;" />
                                     </ContentTemplate>
                                 </asp:UpdatePanel>
                             </div>
-                        </div>
 
-                        <div class="modal-footer">
-                            <%--<button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>--%>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                            <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                                <div class="form-group">
+                                    <asp:UpdatePanel ID="UpdatePanelGrid" runat="server" UpdateMode="Conditional">
+                                        <ContentTemplate>
+                                            <asp:GridView ID="SearchModalGrid" runat="server" AutoPostBack="True" CssClass="table table-bordered form-group"
+                                                AutoGenerateColumns="false" DataKeyNames="" Style="margin-bottom: -18px; text-align: center">
+                                                <Columns>
+                                                    <asp:BoundField DataField="Distcode" HeaderText="Dist. Code" />
+                                                    <asp:BoundField DataField="RouteCode" HeaderText="RouteCode" />
+                                                    <asp:BoundField DataField="RtrCode" HeaderText="Rtr Code" />
+                                                    <asp:BoundField DataField="UrCode" HeaderText="UrCode" />
+                                                    <asp:BoundField DataField="Status" HeaderText="Status" />
+
+                                                </Columns>
+                                                <HeaderStyle CssClass="header-hidden" />
+                                                <RowStyle CssClass="fixed-height-row" BackColor="#FFFFFF" />
+                                            </asp:GridView>
+                                        </ContentTemplate>
+                                    </asp:UpdatePanel>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <%--<button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>--%>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </main>
 
             <%-- Notification Label --%>
             <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;"></div>
