@@ -53,7 +53,7 @@ namespace Route
                         {
                             con.Open();
                         }
-                        SqlCommand cmd1 = new SqlCommand("SP_Route_JSOBeat_Creation", con);
+                        SqlCommand cmd1 = new SqlCommand("SP_Route_SSMType_Beat_Creation", con);
                         cmd1.CommandType = CommandType.StoredProcedure;
                         cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                         cmd1.Parameters.AddWithValue("@ActionType", "Session");
@@ -116,7 +116,7 @@ namespace Route
                                 }
 
                                 // Required columns
-                                string[] requiredColumns = { "DB NAME", "OLD ROUTE CODE", "OLD ROUTE NAME", "NEW ROUTE CODE", "NEW ROUTE NAME",
+                                string[] requiredColumns = { "SSMType", "DB CODE", "OLD ROUTE CODE", "OLD ROUTE NAME", "NEW ROUTE CODE", "NEW ROUTE NAME",
                                                  "MnfCode", "RouteType", "RouteCoverage", "Call Days" };
 
                                 // Read header row and check missing columns
@@ -134,7 +134,6 @@ namespace Route
                                 }
 
                                 dt.Columns.Add("DbCode");
-                                dt.Columns.Add("DbName");
                                 dt.Columns.Add("OldRouteCode");
                                 dt.Columns.Add("OldRouteName");
                                 dt.Columns.Add("NewRouteCode");
@@ -147,8 +146,8 @@ namespace Route
                                 for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
                                 {
                                     DataRow dr = dt.NewRow();
+                                    string ssmType = worksheet.Cells[row, headers.IndexOf("SSMType") + 1].Text.Trim();
                                     string dbcode = worksheet.Cells[row, headers.IndexOf("DB CODE") + 1].Text.Trim();
-                                    string dbName = worksheet.Cells[row, headers.IndexOf("DB NAME") + 1].Text.Trim();
                                     string oldRouteCode = worksheet.Cells[row, headers.IndexOf("OLD ROUTE CODE") + 1].Text.Trim();
                                     string oldRouteName = worksheet.Cells[row, headers.IndexOf("OLD ROUTE NAME") + 1].Text.Trim();
                                     string newRouteCode = worksheet.Cells[row, headers.IndexOf("NEW ROUTE CODE") + 1].Text.Trim();
@@ -157,6 +156,12 @@ namespace Route
                                     string routeTyp = worksheet.Cells[row, headers.IndexOf("RouteType") + 1].Text.Trim();
                                     string routeCov = worksheet.Cells[row, headers.IndexOf("RouteCoverage") + 1].Text.Trim();
                                     string callDays = worksheet.Cells[row, headers.IndexOf("Call Days") + 1].Text.Trim();
+                                                                        
+                                    if (!newRouteCode.StartsWith(ssmType + "_") || !newRouteName.StartsWith(ssmType + "_"))
+                                    {
+                                        showToast("New Route Code and New Route Name must start with " + ssmType + "_", "toast-danger");
+                                        return;
+                                    }
 
                                     int mnfCode, routeType, routeCoverage;
 
@@ -203,7 +208,6 @@ namespace Route
                                     }
 
                                     dr["DbCode"] = dbcode;
-                                    dr["DbName"] = dbName;
                                     dr["OldRouteCode"] = oldRouteCode;
                                     dr["OldRouteName"] = oldRouteName;
                                     dr["NewRouteCode"] = newRouteCode;
@@ -213,11 +217,23 @@ namespace Route
                                     dr["RouteCoverage"] = routeCoverage;
                                     dr["CallDays"] = callDays;
 
-                                    dt.Rows.Add(dr);                                    
+                                    dt.Rows.Add(dr);
                                 }
 
                                 //resdt = dt;
-                                UploadExcel(dt);
+                                resdt = UploadExcel(dt);
+
+                                if(resdt.Rows.Count > 0)
+                                {
+                                    ResultModalGrid.DataSource = resdt;
+                                    ResultModalGrid.DataBind();
+
+                                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ClickButton", "$('#Button1').click();", true);
+
+                                    showToast("Some of the records uploaded", "toast-success");
+                                }
+
+                                
 
                             }
                         }
@@ -242,7 +258,7 @@ namespace Route
             }
         }
 
-        public void UploadExcel(DataTable dt)
+        public DataTable UploadExcel(DataTable dt)
         {
             try
             {
@@ -253,7 +269,7 @@ namespace Route
 
                 foreach (DataRow row in dt.Rows)
                 {
-                    using (SqlCommand cmd1 = new SqlCommand("SP_Route_JSOBeat_Creation_Newlogic", con))
+                    using (SqlCommand cmd1 = new SqlCommand("SP_Route_SSMType_Beat_Creation_Newlogic", con))
                     {
                         cmd1.CommandType = CommandType.StoredProcedure;
                         cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
@@ -280,6 +296,7 @@ namespace Route
             {
                 showToast("Error inserting data: " + ex.Message, "toast-danger");
             }
+            return resdt;
         }
 
 

@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>JSO Beat Creation</title>
+    <title>SSM Type Beat Creation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="Content/bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
@@ -341,7 +341,7 @@
                         <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SO Beat Creation</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">JSO Beat Creation</a>
+                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">SSM Type Beat Creation</a>
                     </li>
                 </ul>
             </aside>
@@ -358,7 +358,7 @@
                         </td>
                     </tr>
                 </table>
-                <h2 style="text-align: center; margin-top: 20px;">JSO Beat Creation</h2>
+                <h2 style="text-align: center; margin-top: 20px;">SSM Type Beat Creation</h2>
                 <br />
 
                 <div class="container">
@@ -371,11 +371,47 @@
                             </div>
                         </div>
                         <div id="btnDivSplit2" class="col-12 col-md-3 mb-2 mb-md-0" runat="server">
-                            <asp:Button ID="SubmitBtn" runat="server" Text="Submit" CssClass="btn btn-info form-control" OnClick="SubmitBtn_Click" />
+                            <asp:Button ID="SubmitBtn" runat="server" Text="Submit" CssClass="btn btn-info form-control" OnClientClick="showLoading()" OnClick="SubmitBtn_Click" />
                         </div>
                     </div>
                 </div>
 
+                <button type="button" class="form-control" id="Button1" runat="server" data-toggle="modal" data-target="#resultModalCenter" style="display: none;">
+                    Modal                       
+                </button>
+
+
+                <%-- Modal for Result --%>
+                <div class="modal fade" id="resultModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="resultModalLongTitle">Result</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                                <div class="form-group">
+                                    <asp:GridView ID="ResultModalGrid" runat="server" AutoPostBack="True" CssClass="table table-bordered form-group"
+                                        AutoGenerateColumns="false" DataKeyNames="" Style="margin-bottom: -18px; text-align: center">
+                                        <Columns>
+                                            <asp:BoundField DataField="Response" HeaderText="Remarks" />
+                                        </Columns>
+                                        <HeaderStyle CssClass="header-hidden" />
+                                        <RowStyle CssClass="fixed-height-row" BackColor="#FFFFFF" />
+                                    </asp:GridView>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <%--<button type="button" class="btn btn-primary" onclick="selectItems()" data-dismiss="modal">Select</button>--%>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </main>
 

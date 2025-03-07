@@ -243,7 +243,7 @@
                         <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SO Beat Creation</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">JSO Beat Creation</a>
+                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">SSM Type Beat Creation</a>
                     </li>
                 </ul>
             </aside>

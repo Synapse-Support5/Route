@@ -376,7 +376,7 @@
                         <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SO Beat Creation</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">JSO Beat Creation</a>
+                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">SSM Type Beat Creation</a>
                     </li>
                 </ul>
             </aside>
@@ -408,7 +408,7 @@
                         <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server" visible="false">
                             <div class="file-upload-container position-relative">
                                 <asp:FileUpload ID="FileUpload_Id" runat="server" CssClass="form-control file-upload-input" accept=".xls, .xlsx, .xlsb" />
-                                <a href="Excel/Sample.xlsx" download="Sample" class="file-upload-link" title="Download Sample Excel Template">
+                                <a href="Excel/NewGeoSample.xlsx" download="Sample" class="file-upload-link" title="Download Sample Excel Template">
                                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png?20190925171014" alt="Excel Logo" class="file-upload-icon" /></a>
                             </div>
                         </div>

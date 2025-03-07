@@ -362,7 +362,7 @@
                         <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SO Beat Creation</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">JSO Beat Creation</a>
+                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">SSM Type Beat Creation</a>
                     </li>
                 </ul>
             </aside>
@@ -549,7 +549,6 @@
             <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;"></div>
             <asp:HiddenField ID="hdnBusinessType" runat="server" />
             <asp:HiddenField ID="hdnRole" runat="server" />
-        </div>
         </div>
     </form>
 

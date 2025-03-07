@@ -394,7 +394,7 @@
                         <a class="nav-link" runat="server" href="~/SOBeatCreation" onclick="showLoading()">SO Beat Creation</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">JSO Beat Creation</a>
+                        <a class="nav-link" runat="server" href="~/JSOBeatCreation" onclick="showLoading()">SSM Type Beat Creation</a>
                     </li>
                 </ul>
             </aside>
@@ -666,6 +666,9 @@
                         </button>
                     </div>
                     <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                        <div class="form-group d-flex justify-content-center align-items-center">
+                            <input type="text" id="txtSearch" class="form-control" placeholder="Search..." />
+                        </div>
                         <div class="form-group">
                             <asp:GridView ID="RouteSplitTransModal" runat="server" AutoPostBack="True" CssClass="table table-bordered form-group"
                                 AutoGenerateColumns="false" DataKeyNames="" Style="margin-bottom: -18px; text-align: center">
@@ -749,6 +752,18 @@
             });
         }
     </script>--%>
+
+    <%-- Script for search button in Modal --%>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#txtSearch").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#<%= RouteSplitTransModal.ClientID %> tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+    </script>
 
     <script type="text/javascript">
         // This function is triggered when the Split button is clicked
