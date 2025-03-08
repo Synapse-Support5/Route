@@ -109,15 +109,40 @@ namespace Route
                             using (var package = new ExcelPackage(FileUpload_Id.FileContent))
                             {
                                 var worksheet = package.Workbook.Worksheets[0];
+                                var keySheet = package.Workbook.Worksheets["KeySheet"];
+
+                                //string keyValue = keySheet.Cells["A1"].Text.Trim();
+
+                                if (keySheet == null)
+                                {
+                                    showToast("Invalid file. Please use sample file to upload.", "toast-danger");
+                                    return;
+                                }
+
+                                string keyValue = keySheet.Cells["A1"]?.Text?.Trim();
+
+                                if (string.IsNullOrEmpty(keyValue) || keyValue != "SYNAPSE")
+                                {
+                                    showToast("Invalid file. Please use sample file to upload.", "toast-danger");
+                                    return;
+                                }
+
                                 if (worksheet == null)
                                 {
                                     showToast("No worksheet found!", "toast-danger");
                                     return;
                                 }
+                                                               
 
                                 // Required columns
                                 string[] requiredColumns = { "SSMType", "DB CODE", "OLD ROUTE CODE", "OLD ROUTE NAME", "NEW ROUTE CODE", "NEW ROUTE NAME",
                                                  "MnfCode", "RouteType", "RouteCoverage", "Call Days" };
+
+                                if (worksheet.Dimension == null || worksheet.Dimension.End.Row <= 1)
+                                {
+                                    showToast("The worksheet has no data!", "toast-danger");
+                                    return;
+                                }
 
                                 // Read header row and check missing columns
                                 var headers = new List<string>();
@@ -232,7 +257,10 @@ namespace Route
 
                                     showToast("Some of the records uploaded", "toast-success");
                                 }
-
+                                else
+                                {
+                                    showToast("Something went wrong. Please try again.", "toast-danger");
+                                }
                                 
 
                             }

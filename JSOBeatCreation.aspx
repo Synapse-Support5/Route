@@ -366,7 +366,7 @@
                         <div id="btnDivSplit" class="col-12 col-md-3 mb-2 mb-md-0" runat="server">
                             <div class="file-upload-container position-relative">
                                 <asp:FileUpload ID="FileUpload_Id" runat="server" CssClass="form-control file-upload-input" accept=".xls, .xlsx, .xlsb" />
-                                <a href="Excel/Sample2.xlsx" download="Sample" class="file-upload-link" title="Download Sample Excel Template">
+                                <a href="Excel/SampleSSMType.xlsx" download="Sample" class="file-upload-link" title="Download Sample Excel Template">
                                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png?20190925171014" alt="Excel Logo" class="file-upload-icon" /></a>
                             </div>
                         </div>
