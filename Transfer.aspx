@@ -555,18 +555,19 @@
                                     <asp:BoundField DataField="RtrCode" HeaderText="Retailer Code" />
                                     <asp:BoundField DataField="UrCode" HeaderText="UR Code" />
 
-                                    <asp:TemplateField>
-                                        <%--<HeaderTemplate>
-                            <div style="margin-right: 10px;">
-                                <input type="checkbox" id="selectAllCheckBox" runat="server" style="margin-left: -3px;" class="form-check-input" onclick="selectAllCheckboxes(this)" />
-                            </div>
-                        </HeaderTemplate>--%>
+                                    <asp:TemplateField HeaderText="Select All">
+                                        <HeaderTemplate>
+                                            <div style="margin-right: 10px; position: relative;">
+                                                <input type="checkbox" id="parentCheckbox" style="margin-left: -3px;" class="form-check-input" />
+                                            </div>
+                                        </HeaderTemplate>
                                         <ItemTemplate>
-                                            <div style="margin-right: 10px;">
-                                                <input type="checkbox" id="CheckBox1" runat="server" class="form-check-input rowCheckbox2" style="margin-left: -3px;" />
+                                            <div style="margin-right: 10px; position: relative;">
+                                                <input type="checkbox" id="CheckBox1" runat="server" class="child-checkbox form-check-input rowCheckbox" style="margin-left: -3px;" />
                                             </div>
                                         </ItemTemplate>
                                     </asp:TemplateField>
+
                                 </Columns>
                             </asp:GridView>
                         </div>
@@ -707,51 +708,33 @@
         <asp:HiddenField ID="hdnRole" runat="server" />
     </form>
 
-    <%-- Script for selectall checkboxes in RouteTransferSplitGridview --%>
-    <%--<script type="text/javascript">
-        function selectAllCheckboxes(source) {
-            var checkboxes = document.querySelectorAll('.rowCheckbox');
-            for (var i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].checked = source.checked;
-            }
-        }
-    </script>--%>
+    <script>
+        $(document).ready(function () {
+            const updateParentCheckbox = () => {
+                const childCheckboxes = $(".child-checkbox");
+                const checkedCheckboxes = childCheckboxes.filter(":checked");
+                const parentCheckbox = $("#parentCheckbox");
 
-    <%--script for SplitGridView Checkboxes to remain any one checkbox--%>
-    <%--<script type="text/javascript">
-        // Function to handle checkbox click
-        function handleCheckboxClick(checkbox) {
-            // Get all checkboxes
-            const checkboxes = document.querySelectorAll('.rowCheckbox');
-
-            // Count checked checkboxes
-            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-
-            // Apply the logic to ensure at least one checkbox remains unchecked
-            checkboxes.forEach(cb => {
-                if (!cb.checked && checkedCount === checkboxes.length - 1) {
-                    cb.disabled = true; // Disable the last unchecked checkbox
+                if (checkedCheckboxes.length === 0) {
+                    parentCheckbox.prop("checked", false).prop("indeterminate", false);
+                } else if (checkedCheckboxes.length === childCheckboxes.length) {
+                    parentCheckbox.prop("checked", true).prop("indeterminate", false);
                 } else {
-                    cb.disabled = false; // Enable others
+                    parentCheckbox.prop("checked", false).prop("indeterminate", true);
                 }
-            });
-        }
+            };
 
-        // This function is triggered when the page is loaded to ensure proper checkbox states
-        window.onload = function () {
-            const checkboxes = document.querySelectorAll('.rowCheckbox');
-            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-
-            // Apply the logic to ensure at least one checkbox remains unchecked
-            checkboxes.forEach(cb => {
-                if (!cb.checked && checkedCount === checkboxes.length - 1) {
-                    cb.disabled = true; // Disable the last unchecked checkbox
-                } else {
-                    cb.disabled = false; // Enable others
-                }
+            $("#parentCheckbox").on("change", function () {
+                const isChecked = $(this).is(":checked");
+                $(".child-checkbox").prop("checked", isChecked);
             });
-        }
-    </script>--%>
+
+            $(".child-checkbox").on("change", updateParentCheckbox);
+
+            updateParentCheckbox(); // Initialize state on page load
+        });
+</script>
+
 
     <%-- Script for search button in Modal --%>
     <script type="text/javascript">
@@ -759,10 +742,10 @@
             $("#txtSearch").on("keyup", function () {
                 var value = $(this).val().toLowerCase();
                 $("#<%= RouteSplitTransModal.ClientID %> tr").filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
             });
         });
-    });
     </script>
 
     <script type="text/javascript">
