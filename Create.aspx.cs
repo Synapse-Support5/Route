@@ -111,6 +111,7 @@ namespace Route
                         cmd1.CommandType = CommandType.StoredProcedure;
                         cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                         cmd1.Parameters.AddWithValue("@ActionType", "Session");
+                        cmd1.Parameters.AddWithValue("@DistCode", "");
 
                         cmd1.CommandTimeout = 6000;
                         SqlDataAdapter da = new SqlDataAdapter(cmd1);
@@ -174,6 +175,7 @@ namespace Route
         protected void RtCoverage_SelectedIndexChanged(object sender, EventArgs e)
         {
             BindWeekdays();
+            SMCodeLoad();
         }
 
         #endregion
@@ -191,6 +193,7 @@ namespace Route
                 cmd1.CommandType = CommandType.StoredProcedure;
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "DistLoad");
+                cmd1.Parameters.AddWithValue("@DistCode", "");
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -262,6 +265,7 @@ namespace Route
                 cmd1.CommandType = CommandType.StoredProcedure;
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "MnfId");
+                cmd1.Parameters.AddWithValue("@DistCode", "");
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -297,6 +301,7 @@ namespace Route
                 cmd1.CommandType = CommandType.StoredProcedure;
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "RtType");
+                cmd1.Parameters.AddWithValue("@DistCode", "");
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -332,6 +337,7 @@ namespace Route
                 cmd1.CommandType = CommandType.StoredProcedure;
                 cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
                 cmd1.Parameters.AddWithValue("@ActionType", "RtCoverage");
+                cmd1.Parameters.AddWithValue("@DistCode", "");
                 cmd1.ExecuteNonQuery();
 
                 cmd1.CommandTimeout = 6000;
@@ -375,6 +381,41 @@ namespace Route
         public class Weekday
         {
             public string DayName { get; set; }
+        }
+        #endregion
+
+        #region SMCodeLoad
+        public void SMCodeLoad()
+        {
+            try
+            {
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                }
+                SqlCommand cmd1 = new SqlCommand("SP_Route_Create_Dropdowns", con);
+                cmd1.CommandType = CommandType.StoredProcedure;
+                cmd1.Parameters.AddWithValue("@session_Name", Session["name"].ToString());
+                cmd1.Parameters.AddWithValue("@ActionType", "SMCodeLoad");
+                cmd1.Parameters.AddWithValue("@DistCode", DistDrp.SelectedValue);
+                cmd1.ExecuteNonQuery();
+
+                cmd1.CommandTimeout = 6000;
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd1);
+                resdt.Rows.Clear();
+                da.Fill(resdt);
+                SMCodeDrp.DataSource = resdt;
+                SMCodeDrp.DataTextField = resdt.Columns["SMCode"].ToString();
+                SMCodeDrp.DataValueField = resdt.Columns["SMCode"].ToString();
+                SMCodeDrp.DataBind();
+                SMCodeDrp.Items.Insert(0, new ListItem("SM Code", ""));
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                showToast("An error occurred: " + ex.Message, "toast-danger");
+            }
         }
         #endregion
 
@@ -496,6 +537,7 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@RtCoverage", rtCoverage);
                 cmd1.Parameters.AddWithValue("@Day", checkedDaysString);
                 cmd1.Parameters.AddWithValue("@Status", 1);
+                cmd1.Parameters.AddWithValue("@SMCode", 1);
                 SqlDataAdapter da = new SqlDataAdapter(cmd1);
                 resdt.Rows.Clear();
                 da.Fill(resdt);
@@ -526,6 +568,7 @@ namespace Route
                         cmd2.Parameters.AddWithValue("@RtCoverage", rtCoverage);
                         cmd2.Parameters.AddWithValue("@Day", checkedDaysString);
                         cmd2.Parameters.AddWithValue("@Status", 1);
+                        cmd2.Parameters.AddWithValue("@SMCode", SMCodeDrp.SelectedValue);
                         cmd2.ExecuteNonQuery();
 
                         showToast("Route Created Successfully", "toast-success");

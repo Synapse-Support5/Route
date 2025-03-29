@@ -361,6 +361,7 @@ namespace Route
                 cmd1.Parameters.AddWithValue("@RtCoverage", rtCoverage);
                 cmd1.Parameters.AddWithValue("@Day", checkedDaysString);
                 cmd1.Parameters.AddWithValue("@Status", DropDownList1.SelectedValue);
+                cmd1.Parameters.AddWithValue("@SMCode", "");
                 cmd1.CommandTimeout = 6000;
                 int result = cmd1.ExecuteNonQuery();
                 con.Close();

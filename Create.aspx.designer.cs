@@ -105,6 +105,24 @@ namespace Route
         protected global::System.Web.UI.WebControls.DropDownList RtCoverage;
 
         /// <summary>
+        /// SMCodeDrp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList SMCodeDrp;
+
+        /// <summary>
+        /// SMCodeTxt control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText SMCodeTxt;
+
+        /// <summary>
         /// Submit control.
         /// </summary>
         /// <remarks>

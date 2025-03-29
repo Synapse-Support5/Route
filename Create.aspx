@@ -406,6 +406,17 @@
                             </button>
                         </div>
                         <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <asp:DropDownList ID="SMCodeDrp" runat="server" AutoPostBack="true" class="form-control" Style="display: none;">
+                            </asp:DropDownList>
+                            <input type="text" id="SMCodeTxt" runat="server" class="form-control" placeholder="Enter SMCode" />
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12 col-md-3 mb-2 mb-md-0"></div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0"></div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0"></div>
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
                             <asp:Button ID="Submit" runat="server" Text="Create" CssClass="btn btn-success form-control" OnClientClick="showLoading()" OnClick="btnSubmit_Click" />
                         </div>
                     </div>
@@ -588,6 +599,35 @@
                     __doPostBack('<%= DistDrp.UniqueID %>', '');
 
                     showLoading();
+
+                    // Return true to avoid clearing the selected value
+                    return true; // Ensures value remains in the input field
+                }
+            });
+
+            var options = [];
+            $('#<%= SMCodeDrp.ClientID %> option').each(function () {
+                var text = $(this).text();  
+                var value = $(this).val();  
+                if (value) {
+                    options.push({ label: text, value: value });
+                }
+            });
+
+            // Initialize jQuery UI Autocomplete
+            $('#SMCodeTxt').autocomplete({
+                source: options,
+                select: function (event, ui) {
+                    // Set the selected value in the input box (DistNm)
+                    $('#SMCodeTxt').val(ui.item.label);
+
+                    // Update the hidden DropDownList (DistDrp) value
+                    $('#<%= SMCodeDrp.ClientID %>').val(ui.item.value);
+
+                    // Trigger OnSelectedIndexChanged event of DropDownList
+                    __doPostBack('<%= SMCodeDrp.UniqueID %>', '');
+
+                    //showLoading();
 
                     // Return true to avoid clearing the selected value
                     return true; // Ensures value remains in the input field

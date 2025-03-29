@@ -12,6 +12,7 @@ using OfficeOpenXml;
 using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
+using System.Reflection.Emit;
 
 namespace Route
 {
@@ -136,7 +137,7 @@ namespace Route
 
                                 // Required columns
                                 string[] requiredColumns = { "SSMType", "DB CODE", "OLD ROUTE CODE", "OLD ROUTE NAME", "NEW ROUTE CODE", "NEW ROUTE NAME",
-                                                 "MnfCode", "RouteType", "RouteCoverage", "Call Days" };
+                                                 "MnfCode", "RouteType", "RouteCoverage", "Call Days", "SMCode" };
 
                                 if (worksheet.Dimension == null || worksheet.Dimension.End.Row <= 1)
                                 {
@@ -158,6 +159,7 @@ namespace Route
                                     return;
                                 }
 
+                                dt.Columns.Add("SSMType");
                                 dt.Columns.Add("DbCode");
                                 dt.Columns.Add("OldRouteCode");
                                 dt.Columns.Add("OldRouteName");
@@ -167,6 +169,7 @@ namespace Route
                                 dt.Columns.Add("RouteType");
                                 dt.Columns.Add("RouteCoverage");
                                 dt.Columns.Add("CallDays");
+                                dt.Columns.Add("SMCode");
 
                                 for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
                                 {
@@ -181,10 +184,17 @@ namespace Route
                                     string routeTyp = worksheet.Cells[row, headers.IndexOf("RouteType") + 1].Text.Trim();
                                     string routeCov = worksheet.Cells[row, headers.IndexOf("RouteCoverage") + 1].Text.Trim();
                                     string callDays = worksheet.Cells[row, headers.IndexOf("Call Days") + 1].Text.Trim();
+                                    string smCode = worksheet.Cells[row, headers.IndexOf("SMCode") + 1].Text.Trim();
                                                                         
                                     if (!newRouteCode.StartsWith(ssmType + "_") || !newRouteName.StartsWith(ssmType + "_"))
                                     {
                                         showToast("New Route Code and New Route Name must start with " + ssmType + "_", "toast-danger");
+                                        return;
+                                    }
+
+                                    if(smCode == "")
+                                    {
+                                        showToast("Please provide SMCode", "toast-danger");
                                         return;
                                     }
 
@@ -232,6 +242,7 @@ namespace Route
                                         return;
                                     }
 
+                                    dr["SSMType"] = ssmType;
                                     dr["DbCode"] = dbcode;
                                     dr["OldRouteCode"] = oldRouteCode;
                                     dr["OldRouteName"] = oldRouteName;
@@ -241,6 +252,8 @@ namespace Route
                                     dr["RouteType"] = routeType;
                                     dr["RouteCoverage"] = routeCoverage;
                                     dr["CallDays"] = callDays;
+                                    dr["SMCode"] = smCode;
+                                    
 
                                     dt.Rows.Add(dr);
                                 }
@@ -310,6 +323,8 @@ namespace Route
                         cmd1.Parameters.AddWithValue("@RouteType", Convert.ToInt32(row["RouteType"]));
                         cmd1.Parameters.AddWithValue("@RouteCoverage", Convert.ToInt32(row["RouteCoverage"]));
                         cmd1.Parameters.AddWithValue("@CallDays", row["CallDays"].ToString());
+                        cmd1.Parameters.AddWithValue("@SMCode", row["SMCode"].ToString());
+                        cmd1.Parameters.AddWithValue("@SMType", row["SSMType"].ToString());
 
                         cmd1.CommandTimeout = 6000;
 
